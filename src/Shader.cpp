@@ -118,3 +118,9 @@ void Shader::setUniformMatrix(const std::string & name,
   sceGxmSetUniformDataF(buff, _uniforms[name], 0, 16,glm::value_ptr(mat));
   
 }
+
+void Shader::release(SceGxmShaderPatcher *shaderPatcher)
+{
+  sceGxmShaderPatcherUnregisterProgram(shaderPatcher, _fragmentProgramId);
+  sceGxmShaderPatcherUnregisterProgram(shaderPatcher, _vertexProgramId);
+}

@@ -387,21 +387,25 @@ void Context::release()
   sceGxmFinish(_gxmContext);
   sceGxmDisplayQueueFinish();
 
-  // clean up display queue
+
   gpu_free(_depthBufferUid);
-  for (int i = 0; i < DISPLAY_BUFFER_COUNT; i++) {
-    // clear the buffer then deallocate
-    memset(_displayBufferData[i], 0, DISPLAY_HEIGHT*DISPLAY_STRIDE_IN_PIXELS*4);
-    gpu_free(_displayBufferUid[i]);
+  for (int i = 0; i < DISPLAY_BUFFER_COUNT; i++)
+    {
+      memset(_displayBufferData[i], 0, DISPLAY_HEIGHT*DISPLAY_STRIDE_IN_PIXELS*4);
+      gpu_free(_displayBufferUid[i]);
+      sceGxmSyncObjectDestroy(_displayBufferSync[i]);
+    }
+  
 
-    // destroy the sync object
-    sceGxmSyncObjectDestroy(_displayBufferSync[i]);
-  }
-
-  // free the depth buffer
   gpu_free(_depthBufferUid);
+  
 
+  clearShader.release(_shaderPatcher);
+  basicShader.release(_shaderPatcher);
 
+  mesh.release();
+  clearMesh.release();
+  
   sceGxmShaderPatcherDestroy(_shaderPatcher);
   fragment_usse_free(_patcherFragmentUsseUid);
   vertex_usse_free(_patcherVertexUsseUid);

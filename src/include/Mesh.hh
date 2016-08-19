@@ -14,6 +14,7 @@ public:
   bool				uploadToVram();
   const glm::vec3		*getVerticesPointer() const;
   const uint16_t		*getIndicesPointer() const;
+  void				release();
   
 private:
   std::vector<uint16_t>		_indices;

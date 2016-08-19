@@ -59,3 +59,9 @@ const uint16_t		*Mesh::getIndicesPointer() const
 {
   return _pIndices;
 }
+
+void			Mesh::release()
+{
+  gpu_free(_verticesUid);
+  gpu_free(_indicesUid);
+}
