@@ -1,0 +1,97 @@
+#include <stdlib.h>
+#include "Utils.hh"
+
+void *gpu_alloc(SceKernelMemBlockType type,
+		unsigned int size,
+		unsigned int alignment,
+		unsigned int attribs,
+		SceUID *uid)
+{
+  void	*mem = nullptr;
+
+  if (type == SCE_KERNEL_MEMBLOCK_TYPE_USER_CDRAM_RW)
+    size = ALIGN(size, 256 * 1024);
+  else
+    size = ALIGN(size, 4 * 1024);
+
+  *uid = sceKernelAllocMemBlock("gpu_mem", type, size, nullptr);
+
+  if (*uid < 0)
+    return nullptr;
+
+  if (sceKernelGetMemBlockBase(*uid, &mem) < 0)
+    return nullptr;
+
+  if (sceGxmMapMemory(mem, size, (SceGxmMemoryAttribFlags)attribs) < 0)
+    return nullptr;
+  
+  return mem;
+}
+
+void	gpu_free(SceUID uid)
+{
+  void	*mem = nullptr;
+  if (sceKernelGetMemBlockBase(uid, &mem) < 0)
+    return;
+
+  sceGxmUnmapMemory(mem);
+  sceKernelFreeMemBlock(uid);
+}
+
+void *vertex_usse_alloc(unsigned int size, SceUID *uid, unsigned int *usse_offset)
+{
+  void *mem = NULL;
+
+  size = ALIGN(size, 4096);
+  *uid = sceKernelAllocMemBlock("vertex_usse", SCE_KERNEL_MEMBLOCK_TYPE_USER_RW_UNCACHE, size, NULL);
+
+  if (sceKernelGetMemBlockBase(*uid, &mem) < 0)
+    return NULL;
+  if (sceGxmMapVertexUsseMemory(mem, size, usse_offset) < 0)
+    return NULL;
+
+  return mem;
+}
+
+void vertex_usse_free(SceUID uid)
+{
+  void *mem = NULL;
+  if (sceKernelGetMemBlockBase(uid, &mem) < 0)
+    return;
+  sceGxmUnmapVertexUsseMemory(mem);
+  sceKernelFreeMemBlock(uid);
+}
+
+void *fragment_usse_alloc(unsigned int size, SceUID *uid, unsigned int *usse_offset)
+{
+  void *mem = NULL;
+
+  size = ALIGN(size, 4096);
+  *uid = sceKernelAllocMemBlock("fragment_usse", SCE_KERNEL_MEMBLOCK_TYPE_USER_RW_UNCACHE, size, NULL);
+
+  if (sceKernelGetMemBlockBase(*uid, &mem) < 0)
+    return NULL;
+  if (sceGxmMapFragmentUsseMemory(mem, size, usse_offset) < 0)
+    return NULL;
+
+  return mem;
+}
+
+void fragment_usse_free(SceUID uid)
+{
+  void *mem = NULL;
+  if (sceKernelGetMemBlockBase(uid, &mem) < 0)
+    return;
+  sceGxmUnmapFragmentUsseMemory(mem);
+  sceKernelFreeMemBlock(uid);
+}
+
+void *patcher_host_alloc(void *user_data, unsigned int size)
+{
+  return malloc(size);
+}
+
+void patcher_host_free(void *user_data, void *mem)
+{
+  free(mem);
+}
