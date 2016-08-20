@@ -32,7 +32,10 @@ $(PROJECT).vpk: eboot.bin param.sfo
 		--add sce_sys/livearea/contents/bg.png=sce_sys/livearea/contents/bg.png \
 		--add sce_sys/livearea/contents/startup.png=sce_sys/livearea/contents/startup.png \
 		--add sce_sys/livearea/contents/template.xml=sce_sys/livearea/contents/template.xml \
-		--add test.txt=test.txt \
+		--add res/basic_f.gxp=res/basic_f.gxp \
+		--add res/basic_v.gxp=res/basic_v.gxp \
+		--add res/clear_f.gxp=res/clear_f.gxp \
+		--add res/clear_v.gxp=res/clear_v.gxp \
 	$(PROJECT).vpk
 
 eboot.bin: $(PROJECT).velf
@@ -60,3 +63,6 @@ out/%.o : src/%.cpp | $(OBJ_DIRS)
 clean:
 	rm -rf $(PROJECT).velf $(PROJECT).elf $(PROJECT).vpk param.sfo eboot.bin $(OBJS)
 	rm -rr $(abspath $(OBJ_DIRS))
+
+install:
+	curl -T GL.vpk ftp://192.168.1.5:1337/ux0:/

@@ -65,3 +65,13 @@ void			Mesh::release()
   gpu_free(_verticesUid);
   gpu_free(_indicesUid);
 }
+
+void	Mesh::draw(SceGxmContext *context)
+{
+  sceGxmSetVertexStream(context, 0, _pVertices);
+  sceGxmDraw(context,
+	     SCE_GXM_PRIMITIVE_TRIANGLES,
+	     SCE_GXM_INDEX_FORMAT_U16,
+	     _pIndices,
+	     _indices.size());
+}

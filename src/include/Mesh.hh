@@ -3,6 +3,7 @@
 #include <vector>
 #include <glm/glm.hpp>
 #include <psp2/gxm.h>
+#include <psp2/gxm.h>
 
 class Mesh
 {
@@ -15,6 +16,7 @@ public:
   const glm::vec3		*getVerticesPointer() const;
   const uint16_t		*getIndicesPointer() const;
   void				release();
+  void				draw(SceGxmContext *context);
   
 private:
   std::vector<uint16_t>		_indices;

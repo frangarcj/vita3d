@@ -19,6 +19,11 @@ public:
   void addFragmentUniform(const std::string & name);
   void setUniformMatrix(const std::string & name, SceGxmContext *, const glm::mat4 & mat);
   void release(SceGxmShaderPatcher * shaderPatcher);
+  void bind(SceGxmContext *context)
+  {
+    sceGxmSetVertexProgram(context, _vertexProgram);
+    sceGxmSetFragmentProgram(context, _fragmentProgram);
+  }
   
 private:
   const SceGxmProgram		*_vertexProgramGxp;

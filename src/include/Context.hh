@@ -4,6 +4,7 @@
 #include <psp2/types.h>
 #include <psp2/kernel/sysmem.h>
 #include <psp2/ctrl.h>
+#include "ShaderFactory.hh"
 
 #define DISPLAY_WIDTH 960
 #define DISPLAY_HEIGHT 544
@@ -20,19 +21,6 @@ struct DisplayData
   void *address;
 };
 
-struct vec2
-{
-  float x;
-  float y;
-};
-
-struct vec3
-{
-  float x;
-  float y;
-  float z;
-};
-
 class Context
 {
 public:
@@ -44,6 +32,11 @@ public:
   void	startDrawing();
   void	endDrawing();
   void	swapBuffers();
+
+  SceGxmContext* gxmContext()
+  {
+    return _gxmContext;
+  }
   
 private:
   SceUID			_vdmRingBufferUid;
@@ -66,11 +59,6 @@ private:
 
   unsigned int			_backBufferIndex = 0;
   unsigned int			_frontBufferIndex = 0;
-  
-  SceGxmShaderPatcher		*_shaderPatcher = nullptr;
-  SceUID			_patcherBufferUid;
-  SceUID			_patcherVertexUsseUid;
-  SceUID			_patcherFragmentUsseUid;
 
   void*				_poolAddr = nullptr;
   SceUID			_poolUid;

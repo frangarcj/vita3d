@@ -11,22 +11,6 @@
 #include "Shader.hh"
 #include "Camera.hh"
 
-extern const SceGxmProgram _binary_shaders_basic_v_gxp_start;
-extern const SceGxmProgram _binary_shaders_basic_f_gxp_start;
-
-extern const SceGxmProgram _binary_shaders_clear_v_gxp_start;
-extern const SceGxmProgram _binary_shaders_clear_f_gxp_start;
-
-Shader basicShader;
-Mesh mesh;
-
-Shader clearShader;
-Mesh clearMesh;
-
-Camera camera;
-
-static float counter = 0;
-
 bool Context::init()
 {
   int err;
@@ -164,132 +148,22 @@ bool Context::init()
 				      depthStrideInSamples,
 				      _depthBufferData,
 				      nullptr);
-
+  
   debugNetPrintf(INFO, (char *)"sceGxmDepthStencilSurfaceInit : %#x\n", err);
   if (err != SCE_OK)
-    return false;
-
-    const unsigned int patcherBufferSize= 64*1024;
-    const unsigned int patcherVertexUsseSize= 64*1024;
-    const unsigned int patcherFragmentUsseSize= 64*1024;
-
-    void *patcherBuffer = gpu_alloc(
-				    SCE_KERNEL_MEMBLOCK_TYPE_USER_RW_UNCACHE,
-				    patcherBufferSize,
-				    4,
-				    SCE_GXM_MEMORY_ATTRIB_READ | SCE_GXM_MEMORY_ATTRIB_WRITE,
-				    &_patcherBufferUid);
-
-    unsigned int patcherVertexUsseOffset;
-    void *patcherVertexUsse = vertex_usse_alloc(
-						patcherVertexUsseSize,
-						&_patcherVertexUsseUid,
-						&patcherVertexUsseOffset);
-
-    unsigned int patcherFragmentUsseOffset;
-    void *patcherFragmentUsse = fragment_usse_alloc(
-						    patcherFragmentUsseSize,
-						    &_patcherFragmentUsseUid,
-						    &patcherFragmentUsseOffset);
-
-    // create a shader patcher
-    SceGxmShaderPatcherParams patcherParams;
-    memset(&patcherParams, 0, sizeof(SceGxmShaderPatcherParams));
-    patcherParams.userData= NULL;
-    patcherParams.hostAllocCallback= &patcher_host_alloc;
-    patcherParams.hostFreeCallback= &patcher_host_free;
-    patcherParams.bufferAllocCallback= NULL;
-    patcherParams.bufferFreeCallback= NULL;
-    patcherParams.bufferMem= patcherBuffer;
-    patcherParams.bufferMemSize= patcherBufferSize;
-    patcherParams.vertexUsseAllocCallback= NULL;
-    patcherParams.vertexUsseFreeCallback= NULL;
-    patcherParams.vertexUsseMem= patcherVertexUsse;
-    patcherParams.vertexUsseMemSize= patcherVertexUsseSize;
-    patcherParams.vertexUsseOffset= patcherVertexUsseOffset;
-    patcherParams.fragmentUsseAllocCallback= NULL;
-    patcherParams.fragmentUsseFreeCallback= NULL;
-    patcherParams.fragmentUsseMem= patcherFragmentUsse;
-    patcherParams.fragmentUsseMemSize= patcherFragmentUsseSize;
-    patcherParams.fragmentUsseOffset= patcherFragmentUsseOffset;
-
-    err = sceGxmShaderPatcherCreate(&patcherParams, &_shaderPatcher);
-    debugNetPrintf(INFO, (char *)"sceGxmShaderPatcherCreate : %#x\n", err);
-    if (err != SCE_OK)
-      return false;
-
-    static const SceGxmProgram *const clearVertexProgramGxp = &_binary_shaders_clear_v_gxp_start;
-    static const SceGxmProgram *const clearFragmentProgramGxp = &_binary_shaders_clear_f_gxp_start;   
-    static const SceGxmProgram *const basicVertexProgramGxp = &_binary_shaders_basic_v_gxp_start;
-    static const SceGxmProgram *const basicFragmentProgramGxp = &_binary_shaders_basic_f_gxp_start;
-
-    clearShader.loadProgram(_shaderPatcher, clearVertexProgramGxp, clearFragmentProgramGxp);
-    basicShader.loadProgram(_shaderPatcher, basicVertexProgramGxp, basicFragmentProgramGxp);
-
-    basicShader.addVertexUniform("wvp");
-    
-    clearMesh.addVertex(glm::vec3(-1.0f, -1.0f, 1.0f));
-    clearMesh.addVertex(glm::vec3(3.0f, -1.0f, 1.0f));
-    clearMesh.addVertex(glm::vec3(-1.0f, 3.0f, 1.0f));
-
-    for (uint16_t i = 0; i < 3; i++)      
-      clearMesh.addIndex(i);
-    clearMesh.uploadToVram();
-
-    mesh.addVertex(glm::vec3(-1.0f,-1.0f,-1.0f));
-    mesh.addVertex(glm::vec3(-1.0f,-1.0f, 1.0f));
-    mesh.addVertex(glm::vec3(-1.0f, 1.0f, 1.0f));
-    mesh.addVertex(glm::vec3(1.0f, 1.0f,-1.0f));
-    mesh.addVertex(glm::vec3(-1.0f,-1.0f,-1.0f));
-    mesh.addVertex(glm::vec3(-1.0f, 1.0f,-1.0f));
-    mesh.addVertex(glm::vec3(1.0f,-1.0f, 1.0f));
-    mesh.addVertex(glm::vec3(-1.0f,-1.0f,-1.0f));
-    mesh.addVertex(glm::vec3(1.0f,-1.0f,-1.0f));
-    mesh.addVertex(glm::vec3(1.0f, 1.0f,-1.0f));
-    mesh.addVertex(glm::vec3(1.0f,-1.0f,-1.0f));
-    mesh.addVertex(glm::vec3(-1.0f,-1.0f,-1.0f));
-    mesh.addVertex(glm::vec3(-1.0f,-1.0f,-1.0f));
-    mesh.addVertex(glm::vec3(-1.0f, 1.0f, 1.0f));
-    mesh.addVertex(glm::vec3(-1.0f, 1.0f,-1.0f));
-    mesh.addVertex(glm::vec3(1.0f,-1.0f, 1.0f));
-    mesh.addVertex(glm::vec3(-1.0f,-1.0f, 1.0f));
-    mesh.addVertex(glm::vec3(-1.0f,-1.0f,-1.0f));
-    mesh.addVertex(glm::vec3(-1.0f, 1.0f, 1.0f));
-    mesh.addVertex(glm::vec3(-1.0f,-1.0f, 1.0f));
-    mesh.addVertex(glm::vec3(1.0f,-1.0f, 1.0f));
-    mesh.addVertex(glm::vec3(1.0f, 1.0f, 1.0f));
-    mesh.addVertex(glm::vec3(1.0f,-1.0f,-1.0f));
-    mesh.addVertex(glm::vec3(1.0f, 1.0f,-1.0f));
-    mesh.addVertex(glm::vec3(1.0f,-1.0f,-1.0f));
-    mesh.addVertex(glm::vec3(1.0f, 1.0f, 1.0f));
-    mesh.addVertex(glm::vec3(1.0f,-1.0f, 1.0f));
-    mesh.addVertex(glm::vec3(1.0f, 1.0f, 1.0f));
-    mesh.addVertex(glm::vec3(1.0f, 1.0f,-1.0f));
-    mesh.addVertex(glm::vec3(-1.0f, 1.0f,-1.0f));
-    mesh.addVertex(glm::vec3(1.0f, 1.0f, 1.0f));
-    mesh.addVertex(glm::vec3(-1.0f, 1.0f,-1.0f));
-    mesh.addVertex(glm::vec3(-1.0f, 1.0f, 1.0f));
-    mesh.addVertex(glm::vec3(1.0f, 1.0f, 1.0f));
-    mesh.addVertex(glm::vec3(-1.0f, 1.0f, 1.0f));
-    mesh.addVertex(glm::vec3(1.0f,-1.0f, 1.0));
-
-    for (uint16_t i = 0; i < 12 *3; i++)
-      mesh.addIndex(i);
-    mesh.uploadToVram();
-    
-    camera.setup();
-
-    _poolSize = DEFAULT_TEMP_POOL_SIZE;
-    _poolAddr = gpu_alloc(
-			  SCE_KERNEL_MEMBLOCK_TYPE_USER_RW,
-			  _poolSize,
-			  sizeof(void *),
-			  SCE_GXM_MEMORY_ATTRIB_READ,
-			  &_poolUid);
-    
-    _backBufferIndex = 0;
-    _frontBufferIndex = 0;    
-    
+    return false;  
+  
+  _poolSize = DEFAULT_TEMP_POOL_SIZE;
+  _poolAddr = gpu_alloc(
+			SCE_KERNEL_MEMBLOCK_TYPE_USER_RW,
+			_poolSize,
+			sizeof(void *),
+			SCE_GXM_MEMORY_ATTRIB_READ,
+			&_poolUid);
+  
+  _backBufferIndex = 0;
+  _frontBufferIndex = 0;    
+  
     return true;
 }
 
@@ -312,7 +186,6 @@ void Context::displayCallback(const void *callbackData)
 
 void Context::update(const SceCtrlData &pad)
 {
-  camera.update(pad);
 }
 
 void Context::startDrawing()
@@ -328,37 +201,6 @@ void Context::startDrawing()
 		   _displayBufferSync[_backBufferIndex],
 		   &_displaySurface[_backBufferIndex],
 		   &_depthSurface);
-
-  sceGxmSetVertexProgram(_gxmContext, clearShader.getVertexProgram());
-  sceGxmSetFragmentProgram(_gxmContext, clearShader.getFragmentProgram());
-
-  sceGxmSetVertexStream(_gxmContext, 0, clearMesh.getVerticesPointer());
-  sceGxmDraw(_gxmContext,
-	     SCE_GXM_PRIMITIVE_TRIANGLES,
-	     SCE_GXM_INDEX_FORMAT_U16,
-	     clearMesh.getIndicesPointer(),
-	     3);
-
-  sceGxmSetVertexProgram(_gxmContext, basicShader.getVertexProgram());
-  sceGxmSetFragmentProgram(_gxmContext, basicShader.getFragmentProgram());
-
-  counter += 0.01f;
-
-  if (counter >= 360.0f)
-    counter -= 360.0f;
-
-  glm::mat4 m = glm::rotate(glm::mat4(1.0f), counter, glm::vec3(0.0f, 1.0f, 0.0f));
-  
-  glm::mat4 mvp = camera.getProjectionMatrix() * camera.getViewMatrix() * m;
-
-  basicShader.setUniformMatrix("wvp", _gxmContext, mvp);
-
-  sceGxmSetVertexStream(_gxmContext, 0, mesh.getVerticesPointer());
-  sceGxmDraw(_gxmContext,
-	     SCE_GXM_PRIMITIVE_TRIANGLES,
-	     SCE_GXM_INDEX_FORMAT_U16,
-	     mesh.getIndicesPointer(),
-	     mesh.getIndices().size());
 }
 
 void Context::endDrawing()
@@ -399,18 +241,6 @@ void Context::release()
 
   gpu_free(_depthBufferUid);
   
-
-  clearShader.release(_shaderPatcher);
-  basicShader.release(_shaderPatcher);
-
-  mesh.release();
-  clearMesh.release();
-  
-  sceGxmShaderPatcherDestroy(_shaderPatcher);
-  fragment_usse_free(_patcherFragmentUsseUid);
-  vertex_usse_free(_patcherVertexUsseUid);
-  gpu_free(_patcherBufferUid);
-
   sceGxmDestroyRenderTarget(_renderTarget);
 
   sceGxmDestroyContext(_gxmContext);
