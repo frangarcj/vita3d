@@ -101,12 +101,13 @@ SceGxmFragmentProgram *Shader::getFragmentProgram() const
 void Shader::addFragmentUniform(const std::string & name)
 {
   _uniforms[name] = sceGxmProgramFindParameterByName(_fragmentProgramGxp, name.c_str());
+  debugNetPrintf(INFO, (char*)"%s : %p\n", name.c_str(), _uniforms[name]);
 }
 
 void Shader::addVertexUniform(const std::string & name)
 {
   _uniforms[name] = sceGxmProgramFindParameterByName(_vertexProgramGxp, name.c_str());
-  debugNetPrintf(INFO, (char*)"wvp : %p\n", _uniforms[name]);
+  debugNetPrintf(INFO, (char*)"%s : %p\n", name.c_str(), _uniforms[name]);
 }
 
 void Shader::setUniformMatrix(const std::string & name,
@@ -116,7 +117,13 @@ void Shader::setUniformMatrix(const std::string & name,
   void *buff;
   sceGxmReserveVertexDefaultUniformBuffer(context, &buff);
   sceGxmSetUniformDataF(buff, _uniforms[name], 0, 16,glm::value_ptr(mat));
-  
+}
+
+void Shader::setUniformVec4(const std::string & name, SceGxmContext *context, const glm::vec4 & vec)
+{
+  void *buff;
+  sceGxmReserveVertexDefaultUniformBuffer(context, &buff);
+  sceGxmSetUniformDataF(buff, _uniforms[name], 0, 4,glm::value_ptr(vec));
 }
 
 void Shader::release(SceGxmShaderPatcher *shaderPatcher)

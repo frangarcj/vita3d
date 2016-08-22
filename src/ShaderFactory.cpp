@@ -89,14 +89,25 @@ SceGxmProgram* ShaderFactory::readShader(const std::string & fileName) const
 
   SceOff size = sceIoLseek(fd, 0, SCE_SEEK_END);
   sceIoLseek(fd, 0, SCE_SEEK_SET);
-
+  
   unsigned char *program = (unsigned char*)malloc(size * sizeof(unsigned char));
+  if (program == nullptr)
+    {
+      debugNetPrintf(ERROR, (char*)"Error while allocating : %d\nExiting...", size);
+      sceIoClose(fd);
+      return nullptr;
+    }
+  
   if (sceIoRead(fd, program, size) <= 0)
     {
       debugNetPrintf(ERROR, (char*)"sceIoRead failed");
       free(program);
+      sceIoClose(fd);
       return nullptr;
     }
+
+  sceIoClose(fd);
+  
   return (SceGxmProgram*)program;
 }
 

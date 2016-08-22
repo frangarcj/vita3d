@@ -17,46 +17,8 @@ bool	Scene::init()
     return false;
   _basicShader.addVertexUniform("wvp");
 
-  _cube.addVertex(glm::vec3(-1.0f,-1.0f,-1.0f));
-  _cube.addVertex(glm::vec3(-1.0f,-1.0f, 1.0f));
-  _cube.addVertex(glm::vec3(-1.0f, 1.0f, 1.0f));
-  _cube.addVertex(glm::vec3(1.0f, 1.0f,-1.0f));
-  _cube.addVertex(glm::vec3(-1.0f,-1.0f,-1.0f));
-  _cube.addVertex(glm::vec3(-1.0f, 1.0f,-1.0f));
-  _cube.addVertex(glm::vec3(1.0f,-1.0f, 1.0f));
-  _cube.addVertex(glm::vec3(-1.0f,-1.0f,-1.0f));
-  _cube.addVertex(glm::vec3(1.0f,-1.0f,-1.0f));
-  _cube.addVertex(glm::vec3(1.0f, 1.0f,-1.0f));
-  _cube.addVertex(glm::vec3(1.0f,-1.0f,-1.0f));
-  _cube.addVertex(glm::vec3(-1.0f,-1.0f,-1.0f));
-  _cube.addVertex(glm::vec3(-1.0f,-1.0f,-1.0f));
-  _cube.addVertex(glm::vec3(-1.0f, 1.0f, 1.0f));
-  _cube.addVertex(glm::vec3(-1.0f, 1.0f,-1.0f));
-  _cube.addVertex(glm::vec3(1.0f,-1.0f, 1.0f));
-  _cube.addVertex(glm::vec3(-1.0f,-1.0f, 1.0f));
-  _cube.addVertex(glm::vec3(-1.0f,-1.0f,-1.0f));
-  _cube.addVertex(glm::vec3(-1.0f, 1.0f, 1.0f));
-  _cube.addVertex(glm::vec3(-1.0f,-1.0f, 1.0f));
-  _cube.addVertex(glm::vec3(1.0f,-1.0f, 1.0f));
-  _cube.addVertex(glm::vec3(1.0f, 1.0f, 1.0f));
-  _cube.addVertex(glm::vec3(1.0f,-1.0f,-1.0f));
-  _cube.addVertex(glm::vec3(1.0f, 1.0f,-1.0f));
-  _cube.addVertex(glm::vec3(1.0f,-1.0f,-1.0f));
-  _cube.addVertex(glm::vec3(1.0f, 1.0f, 1.0f));
-  _cube.addVertex(glm::vec3(1.0f,-1.0f, 1.0f));
-  _cube.addVertex(glm::vec3(1.0f, 1.0f, 1.0f));
-  _cube.addVertex(glm::vec3(1.0f, 1.0f,-1.0f));
-  _cube.addVertex(glm::vec3(-1.0f, 1.0f,-1.0f));
-  _cube.addVertex(glm::vec3(1.0f, 1.0f, 1.0f));
-  _cube.addVertex(glm::vec3(-1.0f, 1.0f,-1.0f));
-  _cube.addVertex(glm::vec3(-1.0f, 1.0f, 1.0f));
-  _cube.addVertex(glm::vec3(1.0f, 1.0f, 1.0f));
-  _cube.addVertex(glm::vec3(-1.0f, 1.0f, 1.0f));
-  _cube.addVertex(glm::vec3(1.0f,-1.0f, 1.0));
-
-  for (uint16_t i = 0; i < 12 *3; i++)
-    _cube.addIndex(i);
-  _cube.uploadToVram();
+  ObjLoader loader;
+  loader.loadModel("app0:res/cube.obj", _model);
 
   _camera.setup();
 
@@ -70,7 +32,7 @@ bool	Scene::init()
   for (uint16_t i = 0; i < 3; i++)      
     _clearMesh.addIndex(i);
   _clearMesh.uploadToVram();
-
+  
   
   return true;
 }
@@ -106,13 +68,15 @@ void	Scene::draw()
   glm::mat4 mvp = _camera.getProjectionMatrix() * _camera.getViewMatrix() * m;
 
   _basicShader.setUniformMatrix("wvp", _context.gxmContext(), mvp);
-  _cube.draw(_context.gxmContext());
+  for (auto & m : _model)
+    m.draw(_context.gxmContext());
 }
 
 void	Scene::release()
 {
   _factory.releaseShader(_basicShader);
   _factory.releaseShader(_clearShader);  
-  _cube.release();
+  for (auto & m : _model)
+    m.draw(_context.gxmContext());
   _clearMesh.release();
 }

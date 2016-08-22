@@ -5,6 +5,8 @@
 #include "Context.hh"
 #include "ShaderFactory.hh"
 #include "Camera.hh"
+#include "ObjLoader.hh"
+
 
 class Scene
 {
@@ -24,7 +26,8 @@ private:
   Camera		_camera;
   
   Shader		_basicShader;
-  Mesh			_cube;
+
+  std::vector<Mesh>	_model;
 
   Shader		_clearShader;
   Mesh			_clearMesh;
