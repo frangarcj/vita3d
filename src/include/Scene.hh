@@ -7,6 +7,7 @@
 #include "Camera.hh"
 #include "ObjLoader.hh"
 #include "ScreenClearer.hh"
+#include "AssetsManager.hh"
 
 class Scene
 {
@@ -24,10 +25,9 @@ private:
   Context &		_context;
   ShaderFactory &	_factory;
   Camera		_camera;
-  
   Shader		_basicShader;
-
-  std::vector<Mesh>	_model;
-
+  std::vector<Mesh>	_buggy;
+  std::vector<Mesh>	_girl;
   ScreenClearer		_clearer;
+  AssetsManager		_manager;
 };

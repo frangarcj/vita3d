@@ -15,20 +15,14 @@ public:
   glm::mat4 getProjectionMatrix() const;
   
 private:
-  glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f,  5.0f);
-  glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-  glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f,  0.0f);
-  float cameraSpeed = 0.5f;
-  glm::mat4 projection;
-  
-  bool firstTime = true;
-
-  float lastXLeft;
-  float lastYLeft;
-  
-  float lastX = 0;
-  float lastY = 0;
-  
+  glm::vec3	_cameraPos   = glm::vec3(0.0f, 0.0f,  5.0f);
+  glm::vec3	_cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+  glm::vec3	_cameraUp    = glm::vec3(0.0f, 1.0f,  0.0f);
+  float		_cameraSpeed = 0.05f;
+  glm::mat4	_projection;  
+  bool		_firstTime = true;
+  glm::vec2	_lastLeft;
+  glm::vec2	_lastRight;    
   float yaw = -90.0f;
   float pitch = 0;
 };

@@ -10,7 +10,9 @@
 #include "tiny_obj_loader.h"
 #include "ObjLoader.hh"
 
-bool	ObjLoader::loadModel(const std::string & fileName, std::vector<Mesh> & model)
+bool	ObjLoader::loadModel(const std::string & fileName,
+			     std::vector<Mesh> & model,
+			     AssetsManager & manager)
 {
   tinyobj::attrib_t attrib;
   std::vector<tinyobj::shape_t> shapes;
@@ -43,15 +45,35 @@ bool	ObjLoader::loadModel(const std::string & fileName, std::vector<Mesh> & mode
 	float ty = attrib.texcoords[2*idx.texcoord_index+1];
 
 	model.at(s).addVertex(glm::vec3(vx, vy, vz));
-	model.at(s).addTexCoord(glm::vec2(tx, ty));
+	model.at(s).addTexCoord(glm::vec2(tx, 1 - ty)); // Inverse y texCoord
       }
       index_offset += fv;
+
+      if (shapes[s].mesh.material_ids.size() != 0)
+	{
+	  std::string path = fileName.substr(0, fileName.find_last_of("/")) +
+	    "/" +
+	    materials[shapes[s].mesh.material_ids[0]].diffuse_texname;
+	  model.at(s).getMaterial().mapDiff = path;					     
+	}
 
       // per-face material
       //      shapes[s].mesh.material_ids[f];
     }
   }
 
+  for (auto & m : materials)
+    {
+      if (m.diffuse_texname != "")
+	{
+	  std::string path = fileName.substr(0, fileName.find_last_of("/")) + "/" +  m.diffuse_texname;
+	  debugNetPrintf(INFO, "Loading : %s\n", path.c_str());
+	  if (!manager.addTexture(path))
+	    return false;
+	}
+
+    }
+  
   for (auto & m : model)
     {
       m.uploadToVram();

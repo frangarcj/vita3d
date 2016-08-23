@@ -1,5 +1,6 @@
 #include "Scene.hh"
 #include "ScreenClearer.hh"
+#include "Texture.hh"
 
 Scene::Scene(Context & context, ShaderFactory & factory) :
   _context(context), _factory(factory)
@@ -20,9 +21,13 @@ bool	Scene::init()
   _basicShader.addVertexUniform("wvp");
 
   ObjLoader loader;
-  loader.loadModel("app0:res/Mesh/dpv/dpv.obj", _model);
+  if (!loader.loadModel("app0:res/Mesh/dpv/dpv.obj", _buggy, _manager))
+    return false;
+  if (!loader.loadModel("app0:res/Mesh/girl/girl.obj", _girl, _manager))
+    return false;
 
-  _clearer.initialize(_context.gxmContext(), _factory.shaderPatcher());
+  if (!_clearer.initialize(_context.gxmContext(), _factory.shaderPatcher()))
+    return false;
   
   _camera.setup();
   
@@ -32,16 +37,11 @@ bool	Scene::init()
 float angleX = 0;
 float angleY = 0;
 
+int fps = 0;
+
 void	Scene::update(SceCtrlData & pad)
-{
-  if (pad.buttons & SCE_CTRL_RIGHT)
-    angleX += 0.1f;
-  if (pad.buttons & SCE_CTRL_LEFT)
-    angleX -= 0.1f;
-  if (pad.buttons & SCE_CTRL_UP)
-    angleY += 0.1f;
-  if (pad.buttons & SCE_CTRL_DOWN)
-    angleY -= 0.1f;
+{ 
+  _camera.update(pad);
 }
 
 void	Scene::clearScreen()
@@ -55,23 +55,38 @@ void	Scene::draw()
   _basicShader.bind(_context.gxmContext());
 
   
-  glm::mat4 m = glm::rotate(glm::mat4(1.0f), angleX, glm::vec3(0.0f, 1.0f, 0.0f));
-  m = glm::rotate(m, angleY, glm::vec3(1.0f, 0.0f, 0.0f));  
+  glm::mat4 m = glm::mat4(1.0f);
   glm::mat4 mvp = _camera.getProjectionMatrix() * _camera.getViewMatrix() * m;
 
   _basicShader.setUniformMatrix("wvp", _context.gxmContext(), mvp);
-  
-  for (auto & m : _model)
+
+  for (auto & m : _buggy)
     {
-      m.draw(_context.gxmContext());
+      std::string diff = m.getMaterial().mapDiff;
+      if (diff != "")
+	_basicShader.setUniformTexture(_context.gxmContext(), _manager.getTexture(diff));
+      m.draw(_context.gxmContext());     
     }
 
+  m = glm::translate(m, glm::vec3(3.0f, 0.0f, 0.0f));
+  mvp = _camera.getProjectionMatrix() * _camera.getViewMatrix() * m;
+  _basicShader.setUniformMatrix("wvp", _context.gxmContext(), mvp);
+  for (auto & m : _girl)
+    {
+      std::string diff = m.getMaterial().mapDiff;
+      if (diff != "")
+	_basicShader.setUniformTexture(_context.gxmContext(), _manager.getTexture(diff));
+      m.draw(_context.gxmContext());     
+    }  
+  
 }
 
 void	Scene::release()
 {
   _factory.releaseShader(_basicShader);
-  for (auto & m : _model)
+  for (auto & m : _buggy)
+    m.draw(_context.gxmContext());
+  for (auto & m : _girl)
     m.draw(_context.gxmContext());
   _clearer.release(_factory.shaderPatcher());
 }

@@ -38,6 +38,18 @@ $(PROJECT).vpk: eboot.bin param.sfo
 		--add res/Shaders/clear_v.gxp=res/Shaders/clear_v.gxp \
 		--add res/Mesh/dpv/dpv.obj=res/Mesh/dpv/dpv.obj \
 		--add res/Mesh/dpv/dpv.mtl=res/Mesh/dpv/dpv.mtl \
+		--add res/Mesh/dpv/Tex_0019_1.png=res/Mesh/dpv/Tex_0019_1.png \
+		--add res/Mesh/dpv/Tex_0019_6.png=res/Mesh/dpv/Tex_0019_6.png \
+		--add res/Mesh/dpv/Tex_0020_1.png=res/Mesh/dpv/Tex_0020_1.png \
+		--add res/Mesh/dpv/Tex_0020_6.png=res/Mesh/dpv/Tex_0020_6.png \
+		--add "res/Mesh/girl/girl.obj=res/Mesh/girl/girl.obj" \
+		--add "res/Mesh/girl/girl.mtl=res/Mesh/girl/girl.mtl" \
+		--add res/Mesh/girl/12c14c70.png=res/Mesh/girl/12c14c70.png \
+		--add res/Mesh/girl/12dbd6d0.png=res/Mesh/girl/12dbd6d0.png \
+		--add res/Mesh/girl/16c2e0d0.png=res/Mesh/girl/16c2e0d0.png \
+		--add res/Mesh/girl/16cecd10.png=res/Mesh/girl/16cecd10.png \
+		--add res/Mesh/girl/19d89130.png=res/Mesh/girl/19d89130.png \
+		--add res/Mesh/girl/13932ef0.png=res/Mesh/girl/13932ef0.png \
 	$(PROJECT).vpk
 
 eboot.bin: $(PROJECT).velf

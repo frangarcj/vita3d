@@ -4,6 +4,7 @@
 #include <debugnet.h>
 #include <map>
 #include <string>
+#include "Texture.hh"
 #include "Mesh.hh"
 
 class Shader
@@ -25,6 +26,11 @@ public:
     sceGxmSetVertexProgram(context, _vertexProgram);
     sceGxmSetFragmentProgram(context, _fragmentProgram);
   }
+  void setUniformTexture(SceGxmContext *context, Texture & texture)
+  {
+    sceGxmSetFragmentTexture(context, 0, texture.getGxmTex());
+  }
+
   
 private:
   const SceGxmProgram		*_vertexProgramGxp;

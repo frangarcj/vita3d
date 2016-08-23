@@ -2,11 +2,12 @@
 
 #include <string>
 #include "Mesh.hh"
+#include "AssetsManager.hh"
 
 class ObjLoader
 {
 public:
-  bool loadModel(const std::string & filename, std::vector<Mesh> & model);
+  bool loadModel(const std::string & filename, std::vector<Mesh> & model, AssetsManager &);
 
 private:
   bool  parseFile(std::stringstream & sstr, std::vector<Mesh> & model);

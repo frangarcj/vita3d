@@ -168,14 +168,15 @@ class MaterialReader {
 
 class MaterialFileReader : public MaterialReader {
  public:
-  explicit MaterialFileReader(const std::string &mtl_basepath)
-      : m_mtlBasePath(mtl_basepath) {}
+  explicit MaterialFileReader(const std::string & mtl_directory, const std::string &mtl_basepath)
+    : m_mtlDirectory(mtl_directory), m_mtlBasePath(mtl_basepath) {}
   virtual ~MaterialFileReader() {}
   virtual bool operator()(const std::string &matId,
                           std::vector<material_t> *materials,
                           std::map<std::string, int> *matMap, std::string *err);
 
  private:
+  std::string m_mtlDirectory;
   std::string m_mtlBasePath;
 };
 
@@ -203,7 +204,7 @@ bool LoadObj(attrib_t *attrib, std::vector<shape_t> *shapes,
 
 /// Loads materials into std::map
 void LoadMtl(std::map<std::string, int> *material_map,
-             std::vector<material_t> *materials, std::istream *inStream);
+             std::vector<material_t> *materials, std::stringstream *inStream);
 
 }  // namespace tinyobj
 
@@ -665,7 +666,7 @@ static bool exportFaceGroupToShape(
 }
 
 void LoadMtl(std::map<std::string, int> *material_map,
-             std::vector<material_t> *materials, std::istream *inStream) {
+             std::vector<material_t> *materials, std::stringstream *inStream) {
   // Create a default material anyway.
   material_t material;
   InitMaterial(&material);
@@ -977,28 +978,39 @@ void LoadMtl(std::map<std::string, int> *material_map,
   materials->push_back(material);
 }
 
-bool MaterialFileReader::operator()(const std::string &matId,
+ bool MaterialFileReader::operator()(const std::string &matId,
                                     std::vector<material_t> *materials,
                                     std::map<std::string, int> *matMap,
                                     std::string *err) {
   std::string filepath;
 
   if (!m_mtlBasePath.empty()) {
-    filepath = std::string(m_mtlBasePath) + matId;
+    filepath = m_mtlDirectory + "/" + std::string(m_mtlBasePath) + matId;
   } else {
-    filepath = matId;
+    filepath = m_mtlDirectory + "/" + matId;
   }
 
-  std::ifstream matIStream(filepath.c_str());
-  LoadMtl(matMap, materials, &matIStream);
-  if (!matIStream) {
-    std::stringstream ss;
-    ss << "WARN: Material file [ " << filepath
-       << " ] not found. Created a default material.";
-    if (err) {
-      (*err) += ss.str();
+  
+  SceUID fd = sceIoOpen(filepath.c_str(), SCE_O_RDONLY, 0777);
+  if (fd < 0)
+    {
+      debugNetPrintf(ERROR, (char*)"Error while opening file : %s\nExiting...", filepath.c_str());
+      return false;
     }
-  }
+
+  char buff[512];
+  memset(buff, 0, 512);
+  std::stringstream sstr;
+
+    while (sceIoRead(fd, buff, 511) > 0)
+    {
+      sstr << buff;
+      debugNetPrintf(INFO, "mtl : [%s]", buff);
+      memset(buff, 0, 512);
+    }
+  sceIoClose(fd);
+  LoadMtl(matMap, materials, &sstr);
+  
   return true;
 }
 
@@ -1031,12 +1043,16 @@ bool LoadObj(attrib_t *attrib, std::vector<shape_t> *shapes,
     }
   sceIoClose(fd);
   
-
   std::string basePath;
   if (mtl_basepath) {
     basePath = mtl_basepath;
   }
-  MaterialFileReader matFileReader(basePath);
+
+  std::string parentDirectory(filename);
+
+  parentDirectory = parentDirectory.substr(0, parentDirectory.find_last_of("/"));
+  
+  MaterialFileReader matFileReader(parentDirectory, basePath);
 
   return LoadObj(attrib, shapes, materials, err, &sstr, &matFileReader,
                  trianglulate);

@@ -43,7 +43,6 @@ bool Mesh::uploadToVram()
 	  _indices.push_back(i);
 	}
     }
-
   
   debugNetPrintf(INFO, (char*)"Mesh::uploadToVram()\n");
   // Allocate vram

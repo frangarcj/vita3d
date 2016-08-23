@@ -47,8 +47,8 @@ int	main()
 
   Scene scene(context, shaderFactory);
 
-  scene.init();
-  
+  if (!scene.init())
+    goto exit;
   while (1)
     {
       sceCtrlPeekBufferPositive(0, &pad, 1);
@@ -65,6 +65,8 @@ int	main()
     }
 
   scene.release();
+
+ exit:
   shaderFactory.release();
   context.release();
   
