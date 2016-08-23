@@ -6,7 +6,7 @@
 #include "ShaderFactory.hh"
 #include "Camera.hh"
 #include "ObjLoader.hh"
-
+#include "ScreenClearer.hh"
 
 class Scene
 {
@@ -29,6 +29,5 @@ private:
 
   std::vector<Mesh>	_model;
 
-  Shader		_clearShader;
-  Mesh			_clearMesh;
+  ScreenClearer		_clearer;
 };

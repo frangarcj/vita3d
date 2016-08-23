@@ -36,7 +36,7 @@ private:
   SceGxmVertexProgram*		_vertexProgram = nullptr;
   SceGxmFragmentProgram*	_fragmentProgram = nullptr;
 
-  SceGxmVertexAttribute		_vertexAttribute[1];
+  SceGxmVertexAttribute		_vertexAttribute[2];
   SceGxmVertexStream		_vertexStream[1];
 
   std::map<std::string, const SceGxmProgramParameter*> _uniforms;

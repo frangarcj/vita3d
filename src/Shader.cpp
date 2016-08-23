@@ -39,8 +39,15 @@ bool Shader::loadProgram(SceGxmShaderPatcher *shaderPatcher,
 
   const SceGxmProgramParameter *posAttribute =
     sceGxmProgramFindParameterByName(vertex, "aPosition");
-  
+
   debugNetPrintf(INFO, (char *)"posAttribute addr : %p\n", posAttribute);
+  if (err != SCE_OK)
+    return false;
+  
+  const SceGxmProgramParameter *texCoordsAttribute =
+    sceGxmProgramFindParameterByName(vertex, "aTexCoord");
+  
+  debugNetPrintf(INFO, (char *)"texCoordsAttribute addr : %p\n", texCoordsAttribute);
   if (err != SCE_OK)
     return false;
   
@@ -50,9 +57,15 @@ bool Shader::loadProgram(SceGxmShaderPatcher *shaderPatcher,
   _vertexAttribute[0].componentCount = 3;
   _vertexAttribute[0].regIndex = sceGxmProgramParameterGetResourceIndex(posAttribute);
 
-  _vertexStream[0].stride = sizeof(glm::vec3);
+  _vertexAttribute[1].streamIndex = 0;
+  _vertexAttribute[1].offset = 12;
+  _vertexAttribute[1].format = SCE_GXM_ATTRIBUTE_FORMAT_F32;
+  _vertexAttribute[1].componentCount = 2;
+  _vertexAttribute[1].regIndex = sceGxmProgramParameterGetResourceIndex(texCoordsAttribute);
+  
+  _vertexStream[0].stride = sizeof(Vattrib);
   _vertexStream[0].indexSource = SCE_GXM_INDEX_SOURCE_INDEX_16BIT;
-
+  
   SceGxmBlendInfo blend_info;  
   blend_info.colorFunc = SCE_GXM_BLEND_FUNC_ADD;
   blend_info.alphaFunc = SCE_GXM_BLEND_FUNC_ADD;
@@ -62,10 +75,14 @@ bool Shader::loadProgram(SceGxmShaderPatcher *shaderPatcher,
   blend_info.alphaDst  = SCE_GXM_BLEND_FACTOR_ZERO;
   blend_info.colorMask = SCE_GXM_COLOR_MASK_ALL;
 
+  debugNetPrintf(INFO, (char *)"Creating vertex program");
+  if (err != SCE_OK)
+    return false;
+  
   err = sceGxmShaderPatcherCreateVertexProgram(shaderPatcher,
 						   _vertexProgramId,
 						   _vertexAttribute,
-						   1,
+						   2,
 						   _vertexStream,
 						   1,
 						   &_vertexProgram);

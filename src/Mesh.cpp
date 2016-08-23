@@ -1,8 +1,8 @@
 #include <cstring>
+#include <algorithm>
 #include <debugnet.h>
 #include "Mesh.hh"
 #include "Utils.hh"
-
 
 void Mesh::addIndex(uint16_t index)
 {
@@ -12,6 +12,11 @@ void Mesh::addIndex(uint16_t index)
 void Mesh::addVertex(const glm::vec3 & vertex)
 {
   _vertices.push_back(vertex);
+}
+
+void Mesh::addTexCoord(const glm::vec2 & texCoord)
+{
+  _texCoords.push_back(texCoord);
 }
 
 const std::vector<uint16_t> & Mesh::getIndices() const
@@ -24,15 +29,33 @@ const std::vector<glm::vec3> & Mesh::getVertices() const
   return _vertices;
 }
 
+const std::vector<glm::vec2> & Mesh::getTexCoords() const
+{
+  return _texCoords;
+}
+
 bool Mesh::uploadToVram()
 {
+  if (_indices.empty())
+    {
+      for (int i = 0; i < _vertices.size(); i++)
+	{
+	  _indices.push_back(i);
+	}
+    }
+
+  
   debugNetPrintf(INFO, (char*)"Mesh::uploadToVram()\n");
   // Allocate vram
-  _pVertices = static_cast<glm::vec3*>(gpu_alloc(SCE_KERNEL_MEMBLOCK_TYPE_USER_RW_UNCACHE,
-						 _vertices.size() * sizeof(glm::vec3),
+  _pVertices = static_cast<Vattrib*>(gpu_alloc(SCE_KERNEL_MEMBLOCK_TYPE_USER_RW_UNCACHE,
+						 _vertices.size() * sizeof(Vattrib),
 						 4,
 						 SCE_GXM_MEMORY_ATTRIB_READ,
 						 &_verticesUid));
+
+  debugNetPrintf(INFO, (char*)"Verices : %d TexCoords : %d\n",
+		 _vertices.size(), _texCoords.size());
+  
   _pIndices = static_cast<uint16_t*>(gpu_alloc(SCE_KERNEL_MEMBLOCK_TYPE_USER_RW_UNCACHE,
 						_indices.size() * sizeof(uint16_t),
 						2,
@@ -42,7 +65,12 @@ bool Mesh::uploadToVram()
   debugNetPrintf(INFO, (char*)"Mesh::uploadToVram vertices allocated\n");
   
   // Copy vertices and indices to vram
-  memcpy(_pVertices, &_vertices[0], _vertices.size() * sizeof(glm::vec3));
+  for (int i = 0; i < _vertices.size(); i++)
+    {
+      _pVertices[i] = Vattrib{_vertices[i].x, _vertices[i].y, _vertices[i].z,
+			      _texCoords[i].x, _texCoords[i].y};
+    }
+  
   memcpy(_pIndices, &_indices[0], _indices.size() * sizeof(uint16_t));  
 
   debugNetPrintf(INFO, (char*)"Mesh::uploadToVram vertices copied\n");
@@ -50,7 +78,7 @@ bool Mesh::uploadToVram()
   return true;
 }
 
-const glm::vec3		*Mesh::getVerticesPointer() const
+const Vattrib		*Mesh::getVerticesPointer() const
 {
   return _pVertices;
 }

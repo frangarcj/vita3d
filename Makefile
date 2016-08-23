@@ -32,10 +32,12 @@ $(PROJECT).vpk: eboot.bin param.sfo
 		--add sce_sys/livearea/contents/bg.png=sce_sys/livearea/contents/bg.png \
 		--add sce_sys/livearea/contents/startup.png=sce_sys/livearea/contents/startup.png \
 		--add sce_sys/livearea/contents/template.xml=sce_sys/livearea/contents/template.xml \
-		--add res/basic_f.gxp=res/basic_f.gxp \
-		--add res/basic_v.gxp=res/basic_v.gxp \
-		--add res/clear_f.gxp=res/clear_f.gxp \
-		--add res/clear_v.gxp=res/clear_v.gxp \
+		--add res/Shaders/basic_f.gxp=res/Shaders/basic_f.gxp \
+		--add res/Shaders/basic_v.gxp=res/Shaders/basic_v.gxp \
+		--add res/Shaders/clear_f.gxp=res/Shaders/clear_f.gxp \
+		--add res/Shaders/clear_v.gxp=res/Shaders/clear_v.gxp \
+		--add res/Mesh/dpv/dpv.obj=res/Mesh/dpv/dpv.obj \
+		--add res/Mesh/dpv/dpv.mtl=res/Mesh/dpv/dpv.mtl \
 	$(PROJECT).vpk
 
 eboot.bin: $(PROJECT).velf
@@ -66,3 +68,6 @@ clean:
 
 install:
 	curl -T GL.vpk ftp://192.168.1.5:1337/ux0:/
+
+install_u:
+	curl -T eboot.bin ftp://192.168.1.5:1337/ux0:app/FFFF00002/

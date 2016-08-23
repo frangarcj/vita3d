@@ -5,110 +5,57 @@
 #include <stdlib.h>
 #include <string>
 #include <debugnet.h>
+
+#define TINYOBJLOADER_IMPLEMENTATION
+#include "tiny_obj_loader.h"
 #include "ObjLoader.hh"
 
-
-std::vector<std::string> split(std::string str, char delimiter) {
-  std::vector<std::string> internal;
-  std::stringstream ss(str); // Turn the string into a stream.
-  std::string tok;
-
-  while(getline(ss, tok, delimiter))
-    {
-      if (!tok.empty())
-	internal.push_back(tok);
-    }
-
-  return internal;
-}
-
-bool ObjLoader::loadModel(const std::string &fileName, std::vector<Mesh> & model)
+bool	ObjLoader::loadModel(const std::string & fileName, std::vector<Mesh> & model)
 {
-  SceUID fd = sceIoOpen(fileName.c_str(), SCE_O_RDONLY, 0777);
-  if (fd < 0)
-    {
-      debugNetPrintf(ERROR, (char*)"Error while opening file : %s\nExiting...", fileName.c_str());
-      return false;
+  tinyobj::attrib_t attrib;
+  std::vector<tinyobj::shape_t> shapes;
+  std::vector<tinyobj::material_t> materials;
+
+  std::string err;
+  bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &err, fileName.c_str());
+
+  if (!ret)
+    return false;
+
+  for (size_t s = 0; s < shapes.size(); s++) {
+    model.push_back(Mesh());
+
+    size_t index_offset = 0;
+    for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++) {
+      int fv = shapes[s].mesh.num_face_vertices[f];
+
+      // Loop over vertices in the face.
+      for (size_t v = 0; v < fv; v++) {
+	// access to vertex
+	tinyobj::index_t idx = shapes[s].mesh.indices[index_offset + v];
+	float vx = attrib.vertices[3*idx.vertex_index+0];
+	float vy = attrib.vertices[3*idx.vertex_index+1];
+	float vz = attrib.vertices[3*idx.vertex_index+2];
+	float nx = attrib.normals[3*idx.normal_index+0];
+	float ny = attrib.normals[3*idx.normal_index+1];
+	float nz = attrib.normals[3*idx.normal_index+2];
+	float tx = attrib.texcoords[2*idx.texcoord_index+0];
+	float ty = attrib.texcoords[2*idx.texcoord_index+1];
+
+	model.at(s).addVertex(glm::vec3(vx, vy, vz));
+	model.at(s).addTexCoord(glm::vec2(tx, ty));
+      }
+      index_offset += fv;
+
+      // per-face material
+      //      shapes[s].mesh.material_ids[f];
     }
-
-  char buff[512];
-  memset(buff, 0, 512);
-
-  std::stringstream sstr;
-
-  while (sceIoRead(fd, buff, 511) > 0)
-    {
-      sstr << buff;
-      memset(buff, 0, 512);
-    }
-
-  sceIoClose(fd);
-  
-  return parseFile(sstr, model);
-}
-
-
-bool ObjLoader::parseFile(std::stringstream & sstr, std::vector<Mesh> & model)
-{
-  int numMesh = 0;
-
-  std::vector<glm::vec3> vertices;
-  uint16_t index = 0;
-
-  model.push_back(Mesh());
-  
-  for (std::string line; std::getline(sstr, line);)
-    {
-      std::vector<std::string> tokens = split(line, ' ');
-      
-      if (tokens.size() > 0)
-	{
-	  if (tokens[0] == "o" && tokens.size() == 2)
-	    {	      
-	      model.push_back(Mesh());
-	      numMesh++;
-	      index = 0;
-	    }
-	  
-	  if (tokens[0] == "v" && tokens.size() == 4)
-	    {
-	      float v[3];
-	      for (int i = 0; i < 3; i++)
-		v[i] = atof(tokens[i + 1].c_str());
-
-	      vertices.push_back(glm::vec3(v[0], v[1], v[2]));	     
-	    }
-
-	  if (tokens[0] == "f" && tokens.size() == 4)
-	    {
-	      int v[3];
-	      int vt[3];
-	      int n[3];
-	      parse_face(tokens, v, vt, n);
-
-	      for (int i = 0; i < 3; i++)
-		{
-		  glm::vec3 vec = vertices[v[i] - 1];  
-		  model.at(numMesh).addVertex(vec);
-		  model.at(numMesh).addIndex(index);
-		  index++;
-		}
-	      
-	    }
-	}     
-    }
+  }
 
   for (auto & m : model)
-    m.uploadToVram();
+    {
+      m.uploadToVram();
+    }
   
   return true;
-}
-
-void ObjLoader::parse_face(const std::vector<std::string> & tokens, int* v, int *vt, int *n)
-{
-  for (int i = 0; i < 3; i++)
-    {
-      std::vector<std::string> tokens_f = split(tokens[i + 1], '/');      
-      v[i] = atoi(tokens_f[0].c_str());      
-    }  
 }

@@ -78,7 +78,7 @@ bool	ShaderFactory::loadShader(Shader &shader,
   return shader.loadProgram(_shaderPatcher, vertexProgram, fragmentProgram);
 }
 
-SceGxmProgram* ShaderFactory::readShader(const std::string & fileName) const
+SceGxmProgram* ShaderFactory::readShader(const std::string & fileName)
 {
   SceUID fd = sceIoOpen(fileName.c_str(), SCE_O_RDONLY, 0777);
   if (fd < 0)
