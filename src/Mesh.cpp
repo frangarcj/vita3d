@@ -14,6 +14,11 @@ void Mesh::addVertex(const glm::vec3 & vertex)
   _vertices.push_back(vertex);
 }
 
+void Mesh::addNormal(const glm::vec3 &normal)
+{
+  _normals.push_back(normal);
+}
+
 void Mesh::addTexCoord(const glm::vec2 & texCoord)
 {
   _texCoords.push_back(texCoord);
@@ -27,6 +32,11 @@ const std::vector<uint16_t> & Mesh::getIndices() const
 const std::vector<glm::vec3> & Mesh::getVertices() const
 {
   return _vertices;
+}
+
+const std::vector<glm::vec3> & Mesh::getNormals() const
+{
+  return _normals;
 }
 
 const std::vector<glm::vec2> & Mesh::getTexCoords() const
@@ -66,12 +76,27 @@ bool Mesh::uploadToVram()
   // Copy vertices and indices to vram
   for (int i = 0; i < _vertices.size(); i++)
     {
-      _pVertices[i] = Vattrib{_vertices[i].x, _vertices[i].y, _vertices[i].z,
-			      _texCoords[i].x, _texCoords[i].y};
+      _pVertices[i] = Vattrib
+	{
+	  _vertices[i].x,
+	  _vertices[i].y,
+	  _vertices[i].z,
+	  _normals[i].x,
+	  _normals[i].y,
+	  _normals[i].z,
+	  _texCoords[i].x,
+	  _texCoords[i].y
+	};
     }
   
   memcpy(_pIndices, &_indices[0], _indices.size() * sizeof(uint16_t));  
 
+
+  // Free memory for now
+  _normals.clear();
+  _vertices.clear();
+  _texCoords.clear();
+  
   debugNetPrintf(INFO, (char*)"Mesh::uploadToVram vertices copied\n");
   
   return true;

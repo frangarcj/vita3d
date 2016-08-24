@@ -1,11 +1,14 @@
 void main(
        float3 aPosition,
+       float3 aNormal,
        float2 aTexCoord,
        uniform float4x4 wvp,
        out float4 vPosition : POSITION,
-       out float2 vTexCoord : TEXCOORD0
+       out float4 vNormal : TEXCOORD0,
+       out float2 vTexCoord : TEXCOORD1
        )
 {
 	vPosition = mul(float4(aPosition, 1.f), wvp);
+	vNormal = float4(aNormal, 1.f);
 	vTexCoord = aTexCoord;
 }

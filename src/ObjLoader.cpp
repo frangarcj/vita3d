@@ -45,6 +45,7 @@ bool	ObjLoader::loadModel(const std::string & fileName,
 	float ty = attrib.texcoords[2*idx.texcoord_index+1];
 
 	model.at(s).addVertex(glm::vec3(vx, vy, vz));
+	model.at(s).addNormal(glm::vec3(nx, ny, nz));
 	model.at(s).addTexCoord(glm::vec2(tx, 1 - ty)); // Inverse y texCoord
       }
       index_offset += fv;

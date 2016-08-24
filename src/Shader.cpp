@@ -43,7 +43,14 @@ bool Shader::loadProgram(SceGxmShaderPatcher *shaderPatcher,
   debugNetPrintf(INFO, (char *)"posAttribute addr : %p\n", posAttribute);
   if (err != SCE_OK)
     return false;
+
+  const SceGxmProgramParameter *normalAttribute =
+    sceGxmProgramFindParameterByName(vertex, "aNormal");
   
+  debugNetPrintf(INFO, (char *)"normalAttribute addr : %p\n", normalAttribute);
+  if (err != SCE_OK)
+    return false;
+
   const SceGxmProgramParameter *texCoordsAttribute =
     sceGxmProgramFindParameterByName(vertex, "aTexCoord");
   
@@ -60,8 +67,14 @@ bool Shader::loadProgram(SceGxmShaderPatcher *shaderPatcher,
   _vertexAttribute[1].streamIndex = 0;
   _vertexAttribute[1].offset = 12;
   _vertexAttribute[1].format = SCE_GXM_ATTRIBUTE_FORMAT_F32;
-  _vertexAttribute[1].componentCount = 2;
-  _vertexAttribute[1].regIndex = sceGxmProgramParameterGetResourceIndex(texCoordsAttribute);
+  _vertexAttribute[1].componentCount = 3;
+  _vertexAttribute[1].regIndex = sceGxmProgramParameterGetResourceIndex(normalAttribute);
+  
+  _vertexAttribute[2].streamIndex = 0;
+  _vertexAttribute[2].offset = 24;
+  _vertexAttribute[2].format = SCE_GXM_ATTRIBUTE_FORMAT_F32;
+  _vertexAttribute[2].componentCount = 2;
+  _vertexAttribute[2].regIndex = sceGxmProgramParameterGetResourceIndex(texCoordsAttribute);
   
   _vertexStream[0].stride = sizeof(Vattrib);
   _vertexStream[0].indexSource = SCE_GXM_INDEX_SOURCE_INDEX_16BIT;
@@ -82,7 +95,7 @@ bool Shader::loadProgram(SceGxmShaderPatcher *shaderPatcher,
   err = sceGxmShaderPatcherCreateVertexProgram(shaderPatcher,
 						   _vertexProgramId,
 						   _vertexAttribute,
-						   2,
+						   3,
 						   _vertexStream,
 						   1,
 						   &_vertexProgram);
