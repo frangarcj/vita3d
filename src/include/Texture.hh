@@ -16,10 +16,8 @@ public:
   unsigned int getHeight();
   SceGxmTextureFormat getFormat();
   static int formatToBytespp(SceGxmTextureFormat format);
-  SceGxmTexture *getGxmTex()
-  {
-    return &_gxmTex;
-  }
+  SceGxmTexture *getGxmTex();
+  void		release();
   
 private:
   bool load(const void *pIo, png_rw_ptr readDataFn);

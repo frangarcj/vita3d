@@ -10,3 +10,11 @@ Texture & AssetsManager::getTexture(const std::string & name)
 {
   return _textures[name];
 }
+
+void	AssetsManager::release()
+{
+  for (auto & p : _textures)
+    {
+      p.second.release();
+    }
+}

@@ -5,15 +5,15 @@ CC := arm-vita-eabi-gcc
 CXX := arm-vita-eabi-g++
 STRIP := arm-vita-eabi-strip
 
-PROJECT_TITLE := GL
+PROJECT_TITLE := Vita3d
 PROJECT_TITLEID := FFFF00002
 
-PROJECT := GL
-CXXFLAGS += -std=c++11 -Isrc/include
+PROJECT := Vita3d
+CXXFLAGS += -std=c++11 -Isrc/include -Iinclude
 
 LIBS := -lvita2d -lSceKernel_stub -lSceDisplay_stub -lSceGxm_stub \
 	-lSceSysmodule_stub -lSceCtrl_stub -lScePgf_stub \
-	-lSceCommonDialog_stub -ldebugnet -lSceNet_stub -lSceNetCtl_stub -lSceHttp_stub -lfreetype -lpng -ljpeg -lz -lm -lc
+	-lSceCommonDialog_stub -ldebugnet -lSceNet_stub -lSceNetCtl_stub -lSceHttp_stub -lfreetype -lpng -ljpeg -lz -lm -lc -L./libs
 
 SRC_C :=$(call rwildcard, src/, *.c)
 SRC_CPP :=$(call rwildcard, src/, *.cpp)
@@ -79,7 +79,7 @@ clean:
 	rm -rr $(abspath $(OBJ_DIRS))
 
 install:
-	curl -T GL.vpk ftp://192.168.1.5:1337/ux0:/
+	curl -T Vita3d.vpk ftp://192.168.1.5:1337/ux0:/
 
 install_u:
 	curl -T eboot.bin ftp://192.168.1.5:1337/ux0:app/FFFF00002/

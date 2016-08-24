@@ -249,3 +249,15 @@ bool   Texture::createEmptyTexture(unsigned int w, unsigned int h)
   
   return true;
 }
+
+SceGxmTexture *Texture::getGxmTex()
+{
+  return &_gxmTex;
+}
+
+void	Texture::release()
+{
+  if (_paletteUID)
+    gpu_free(_paletteUID);
+  gpu_free(_dataUID);
+}
