@@ -8,6 +8,8 @@
 #include "ObjLoader.hh"
 #include "ScreenClearer.hh"
 #include "AssetsManager.hh"
+#include "Car.hh"
+#include "PhysicSystem.hh"
 
 class Scene
 {
@@ -15,7 +17,7 @@ public:
   Scene(Context & context, ShaderFactory & factory);
   ~Scene();
   bool	init();
-  void	update(SceCtrlData & pad);
+  void	update(SceCtrlData & pad, float totalT, float elapsedT);
   void	draw();
   void  release();
   
@@ -25,10 +27,9 @@ private:
   Context &		_context;
   ShaderFactory &	_factory;
   Camera		_camera;
-  Shader		_basicShader;
   Shader		_lightShader;
-  std::vector<Mesh>	_buggy;
-  std::vector<Mesh>	_earth;
   ScreenClearer		_clearer;
   AssetsManager		_manager;
+  Car			_car;
+  PhysicSystem		_physicSystem;
 };

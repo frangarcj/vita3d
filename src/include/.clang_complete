@@ -3,3 +3,4 @@
 -Wetra
 -pthread
 -I/usr/local/vitasdk/arm-vita-eabi/include
+-I../../include

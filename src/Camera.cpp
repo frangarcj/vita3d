@@ -60,7 +60,7 @@ void Camera::update(const SceCtrlData & pad)
 	pitch -= yoffset;
       }
    
-    if (pad.buttons & SCE_CTRL_CROSS)
+    if (pad.buttons & SCE_CTRL_TRIANGLE)
       {
 	_cameraPos   = glm::vec3(0.0f, 0.0f,  5.0f);
 	_cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
@@ -68,9 +68,6 @@ void Camera::update(const SceCtrlData & pad)
 	yaw = -90.0f;
 	pitch = 0.0f;
       }
-
-
-    
     
     glm::vec3 front;
     front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));

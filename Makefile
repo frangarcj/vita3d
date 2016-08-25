@@ -13,7 +13,7 @@ CXXFLAGS += -std=c++11 -Isrc/include -Iinclude
 
 LIBS := -lvita2d -lSceKernel_stub -lSceDisplay_stub -lSceGxm_stub \
 	-lSceSysmodule_stub -lSceCtrl_stub -lScePgf_stub \
-	-lSceCommonDialog_stub -ldebugnet -lSceNet_stub -lSceNetCtl_stub -lSceHttp_stub -lfreetype -lpng -ljpeg -lz -lm -lc -L./libs
+	-lSceCommonDialog_stub -ldebugnet -lSceNet_stub -lSceNetCtl_stub -lSceHttp_stub -lfreetype -lpng -ljpeg -lz -lm -lc -L./libs -lbullet
 
 SRC_C :=$(call rwildcard, src/, *.c)
 SRC_CPP :=$(call rwildcard, src/, *.cpp)
@@ -44,9 +44,6 @@ $(PROJECT).vpk: eboot.bin param.sfo
 		--add res/Mesh/dpv/Tex_0019_6.png=res/Mesh/dpv/Tex_0019_6.png \
 		--add res/Mesh/dpv/Tex_0020_1.png=res/Mesh/dpv/Tex_0020_1.png \
 		--add res/Mesh/dpv/Tex_0020_6.png=res/Mesh/dpv/Tex_0020_6.png \
-		--add res/Mesh/Sphere/earth.png=res/Mesh/Sphere/earth.png \
-		--add res/Mesh/Sphere/sphere.obj=res/Mesh/Sphere/sphere.obj \
-		--add res/Mesh/Sphere/sphere.mtl=res/Mesh/Sphere/sphere.mtl \
 $(PROJECT).vpk
 
 eboot.bin: $(PROJECT).velf

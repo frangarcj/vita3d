@@ -9,7 +9,7 @@ static float3 materialSpecularColor = float3(0.59f, 0.59f, 0.59f);
 
 static Light light = Light
 (
- float4(-30.f, 75.f, 0.0f, 0.f),
+ float4(30.f, 0.f, -70.0f, 0.f),
  float3(1.f, 1.f, 1.f),
  0.8f
 );

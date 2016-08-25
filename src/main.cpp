@@ -15,18 +15,19 @@
 #include "Shader.hh"
 #include "ShaderFactory.hh"
 
+
 #define ip_server "192.168.1.3"
 #define port_server 18194  
 
 int	main()
 {
+  sceSysmoduleLoadModule(SCE_SYSMODULE_NET);
+  debugNetInit((char*)ip_server, port_server, DEBUG);
+
   Context context;
   ShaderFactory shaderFactory;
   SceCtrlData pad;
   
-  sceSysmoduleLoadModule(SCE_SYSMODULE_NET);
-  debugNetInit((char*)ip_server, port_server, DEBUG);
-
   sceCtrlSetSamplingMode(SCE_CTRL_MODE_ANALOG);
   memset(&pad, 0, sizeof(pad));
 
@@ -46,22 +47,37 @@ int	main()
     }
 
   Scene scene(context, shaderFactory);
-
   if (!scene.init())
-    goto exit;
+    {
+      shaderFactory.release();
+      context.release();
+  
+      debugNetFinish();
+      sceKernelExitProcess(0);
+      return 0;
+    }
+
+  SceKernelSysClock sysClock;
+  sceKernelGetProcessTime(&sysClock);
+  float lastTime = (sysClock / 1000000.0f);
   while (1)
     {
+      sceKernelGetProcessTime(&sysClock);
+      float totalT = (sysClock / 1000000.0f);
+      
       sceCtrlPeekBufferPositive(0, &pad, 1);
       
       if (pad.buttons & SCE_CTRL_START)
 	break;
 
-      scene.update(pad);
+      
+      scene.update(pad, totalT, totalT - lastTime);
       context.startDrawing();
       scene.draw();
       context.endDrawing();
       context.swapBuffers();
 
+      lastTime = totalT;
     }
 
   scene.release();

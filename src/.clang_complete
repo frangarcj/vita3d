@@ -4,3 +4,4 @@
 -pthread
 -I/usr/local/vitasdk/arm-vita-eabi/include
 -Iinclude
+-I../include
