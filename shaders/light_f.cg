@@ -4,7 +4,7 @@ struct Light {
   float ambientCoefficient;
 };
 
-static float materialShininess = 1.f;
+static float materialShininess = 0.2f;
 static float3 materialSpecularColor = float3(0.59f, 0.59f, 0.59f);
 
 static Light light = Light
@@ -65,6 +65,7 @@ float4 main(
   float3 linearColor = float3(0.f);
 
   linearColor += applyLight(light, surfaceColor.rgb, vOut.vNormal, surfacePos, surfaceToCamera);
-  
-  return float4(linearColor, 1.f);
+
+  float3 gamma = float3(1.f/2.f);
+  return float4(pow(linearColor, gamma), surfaceColor.a);
 }

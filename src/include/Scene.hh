@@ -10,6 +10,7 @@
 #include "AssetsManager.hh"
 #include "Car.hh"
 #include "PhysicSystem.hh"
+#include "Ground.hh"
 
 class Scene
 {
@@ -31,5 +32,6 @@ private:
   ScreenClearer		_clearer;
   AssetsManager		_manager;
   Car			_car;
+  Ground		_ground;
   PhysicSystem		_physicSystem;
 };

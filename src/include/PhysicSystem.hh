@@ -10,13 +10,19 @@ public:
   void update(float elapsed);
   void release();
   btDiscreteDynamicsWorld*	getWorld();
+  void addCollisionShape(btCollisionShape *collisionShape);
+  btRigidBody* localCreateRigidBody(btScalar mass,
+				  const btTransform& startTransform,
+				    btCollisionShape* shape);
+
   
 private:
-  btBroadphaseInterface*		_broadphase;
-  btDefaultCollisionConfiguration*	_collisionConfiguration;
-  btCollisionDispatcher*		_dispatcher;
-  btSequentialImpulseConstraintSolver*	_solver;
-  btDiscreteDynamicsWorld*		_dynamicsWorld;
-  btCollisionShape* _groundShape;
-  btRigidBody* _groundRigidBody;
+  btBroadphaseInterface*			_overlappingPairCache;
+  btCollisionDispatcher*			_dispatcher;
+  btConstraintSolver*				_constraintSolver;
+  btBroadphaseInterface*			_broadphase;
+  btDefaultCollisionConfiguration*		_collisionConfiguration;
+  btSequentialImpulseConstraintSolver*		_solver;
+  btDiscreteDynamicsWorld*			_dynamicsWorld;
+  btAlignedObjectArray<btCollisionShape*>	_collisionShapes;
 };

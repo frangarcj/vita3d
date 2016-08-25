@@ -38,12 +38,15 @@ $(PROJECT).vpk: eboot.bin param.sfo
 		--add res/Shaders/light_v.gxp=res/Shaders/light_v.gxp \
 		--add res/Shaders/clear_f.gxp=res/Shaders/clear_f.gxp \
 		--add res/Shaders/clear_v.gxp=res/Shaders/clear_v.gxp \
-		--add res/Mesh/dpv/dpv.obj=res/Mesh/dpv/dpv.obj \
-		--add res/Mesh/dpv/dpv.mtl=res/Mesh/dpv/dpv.mtl \
-		--add res/Mesh/dpv/Tex_0019_1.png=res/Mesh/dpv/Tex_0019_1.png \
-		--add res/Mesh/dpv/Tex_0019_6.png=res/Mesh/dpv/Tex_0019_6.png \
-		--add res/Mesh/dpv/Tex_0020_1.png=res/Mesh/dpv/Tex_0020_1.png \
-		--add res/Mesh/dpv/Tex_0020_6.png=res/Mesh/dpv/Tex_0020_6.png \
+		--add res/Mesh/car/chassis.obj=res/Mesh/car/chassis.obj \
+		--add res/Mesh/car/wheel.obj=res/Mesh/car/wheel.obj \
+		--add res/Mesh/car/chassis.mtl=res/Mesh/car/chassis.mtl \
+		--add res/Mesh/car/wheel.mtl=res/Mesh/car/wheel.mtl \
+		--add res/Mesh/car/chassis_uv.png=res/Mesh/car/chassis_uv.png \
+		--add res/Mesh/car/wheel_uv.png=res/Mesh/car/wheel_uv.png \
+		--add res/Mesh/Ground/ground.obj=res/Mesh/Ground/ground.obj \
+		--add res/Mesh/Ground/ground.mtl=res/Mesh/Ground/ground.mtl \
+		--add res/Mesh/Ground/texture.png=res/Mesh/Ground/texture.png \
 $(PROJECT).vpk
 
 eboot.bin: $(PROJECT).velf

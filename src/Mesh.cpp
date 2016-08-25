@@ -91,11 +91,12 @@ bool Mesh::uploadToVram()
   
   memcpy(_pIndices, &_indices[0], _indices.size() * sizeof(uint16_t));  
 
-
+  /*
   // Free memory for now
   _normals.clear();
   _vertices.clear();
   _texCoords.clear();
+*/
   
   debugNetPrintf(INFO, (char*)"Mesh::uploadToVram vertices copied\n");
   

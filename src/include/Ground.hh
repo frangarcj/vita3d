@@ -1,7 +1,5 @@
 #pragma once
 
-#include <glm/gtx/euler_angles.hpp>
-#include <glm/gtc/matrix_inverse.hpp>
 #include <btBulletDynamicsCommon.h>
 #include <BulletDynamics/Vehicle/btRaycastVehicle.h>
 #include <psp2/types.h>
@@ -12,25 +10,18 @@
 #include "AssetsManager.hh"
 #include "ObjLoader.hh"
 #include "PhysicSystem.hh"
+#include <stdlib.h>
 
-class Car
+class Ground
 {
 public:
-  bool init(ObjLoader & loader, AssetsManager & manager, PhysicSystem & system);
+  bool init(ObjLoader & loader, AssetsManager & manager, PhysicSystem & physicSystem);
   void update(float elapsedTime, SceCtrlData & pad);
   void draw(Shader & shader, Camera & camera, SceGxmContext *context, AssetsManager & manager);
   void release(PhysicSystem & system);
   
 private:
-  glm::vec3 _position;
-  glm::vec3 _rotation;
-  std::vector<Mesh> _chassis;
-  std::vector<Mesh> _wheel;
-
-  btRigidBody*					_carChassis;
-
-  btRaycastVehicle::btVehicleTuning		_tuning;
-  btVehicleRaycaster*				_vehicleRayCaster;
-  btRaycastVehicle*				_vehicle;
-  btCollisionShape*				_wheelShape;
+  std::vector<Mesh>				_mesh;
+  btVector3*					_vertices;
+  btTriangleIndexVertexArray*			_indexVertexArrays;
 };

@@ -33,9 +33,9 @@ bool	Scene::init()
   _lightShader.addUniform(FRAGMENT, "cameraPosition");
   _lightShader.addUniform(FRAGMENT, "model");
 
-  _car.init(loader, _manager, _physicSystem.getWorld());
+  _ground.init(loader, _manager, _physicSystem);
+  _car.init(loader, _manager, _physicSystem);
   _camera.setup();
-
   
   return true;
 }
@@ -43,8 +43,10 @@ bool	Scene::init()
 void	Scene::update(SceCtrlData & pad, float totalT, float elapsed)
 {
   _camera.update(pad);
-  _car.update(elapsed, pad);  
+
   _physicSystem.update(elapsed);  
+  _car.update(elapsed, pad);  
+
 }
 
 void	Scene::clearScreen()
@@ -55,13 +57,17 @@ void	Scene::clearScreen()
 void	Scene::draw()
 {  
   clearScreen();
+
+
+  _ground.draw(_lightShader, _camera, _context.gxmContext(), _manager);
   _car.draw(_lightShader, _camera, _context.gxmContext(), _manager);
 }
 
 void	Scene::release()
 {
-  _car.release(_physicSystem.getWorld());
+  _car.release(_physicSystem);
+  _ground.release(_physicSystem);
   _factory.releaseShader(_lightShader);
   _clearer.release(_factory.shaderPatcher());
-  _physicSystem.release();
+  //  _physicSystem.release();
 }
