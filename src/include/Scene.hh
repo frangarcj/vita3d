@@ -26,8 +26,9 @@ private:
   ShaderFactory &	_factory;
   Camera		_camera;
   Shader		_basicShader;
+  Shader		_lightShader;
   std::vector<Mesh>	_buggy;
-  std::vector<Mesh>	_girl;
+  std::vector<Mesh>	_earth;
   ScreenClearer		_clearer;
   AssetsManager		_manager;
 };

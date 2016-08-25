@@ -34,6 +34,8 @@ $(PROJECT).vpk: eboot.bin param.sfo
 		--add sce_sys/livearea/contents/template.xml=sce_sys/livearea/contents/template.xml \
 		--add res/Shaders/basic_f.gxp=res/Shaders/basic_f.gxp \
 		--add res/Shaders/basic_v.gxp=res/Shaders/basic_v.gxp \
+		--add res/Shaders/light_f.gxp=res/Shaders/light_f.gxp \
+		--add res/Shaders/light_v.gxp=res/Shaders/light_v.gxp \
 		--add res/Shaders/clear_f.gxp=res/Shaders/clear_f.gxp \
 		--add res/Shaders/clear_v.gxp=res/Shaders/clear_v.gxp \
 		--add res/Mesh/dpv/dpv.obj=res/Mesh/dpv/dpv.obj \
@@ -42,15 +44,10 @@ $(PROJECT).vpk: eboot.bin param.sfo
 		--add res/Mesh/dpv/Tex_0019_6.png=res/Mesh/dpv/Tex_0019_6.png \
 		--add res/Mesh/dpv/Tex_0020_1.png=res/Mesh/dpv/Tex_0020_1.png \
 		--add res/Mesh/dpv/Tex_0020_6.png=res/Mesh/dpv/Tex_0020_6.png \
-		--add "res/Mesh/girl/girl.obj=res/Mesh/girl/girl.obj" \
-		--add "res/Mesh/girl/girl.mtl=res/Mesh/girl/girl.mtl" \
-		--add res/Mesh/girl/12c14c70.png=res/Mesh/girl/12c14c70.png \
-		--add res/Mesh/girl/12dbd6d0.png=res/Mesh/girl/12dbd6d0.png \
-		--add res/Mesh/girl/16c2e0d0.png=res/Mesh/girl/16c2e0d0.png \
-		--add res/Mesh/girl/16cecd10.png=res/Mesh/girl/16cecd10.png \
-		--add res/Mesh/girl/19d89130.png=res/Mesh/girl/19d89130.png \
-		--add res/Mesh/girl/13932ef0.png=res/Mesh/girl/13932ef0.png \
-	$(PROJECT).vpk
+		--add res/Mesh/Sphere/earth.png=res/Mesh/Sphere/earth.png \
+		--add res/Mesh/Sphere/sphere.obj=res/Mesh/Sphere/sphere.obj \
+		--add res/Mesh/Sphere/sphere.mtl=res/Mesh/Sphere/sphere.mtl \
+$(PROJECT).vpk
 
 eboot.bin: $(PROJECT).velf
 	vita-make-fself $(PROJECT).velf eboot.bin

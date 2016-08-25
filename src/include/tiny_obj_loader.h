@@ -1005,7 +1005,7 @@ void LoadMtl(std::map<std::string, int> *material_map,
     while (sceIoRead(fd, buff, 511) > 0)
     {
       sstr << buff;
-      debugNetPrintf(INFO, "mtl : [%s]", buff);
+      debugNetPrintf(INFO, "%s", buff);
       memset(buff, 0, 512);
     }
   sceIoClose(fd);

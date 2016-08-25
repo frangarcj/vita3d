@@ -7,6 +7,9 @@
 #include "Texture.hh"
 #include "Mesh.hh"
 
+#define VERTEX		0x00000001
+#define FRAGMENT	0x00000002
+
 class Shader
 {
 public:
@@ -16,10 +19,11 @@ public:
 
   SceGxmVertexProgram *getVertexProgram() const;
   SceGxmFragmentProgram *getFragmentProgram() const;
-  void addVertexUniform(const std::string & name);
-  void addFragmentUniform(const std::string & name);
-  void setUniformMatrix(const std::string & name, SceGxmContext *, const glm::mat4 & mat);
-  void setUniformVec4(const std::string & name, SceGxmContext *, const glm::vec4 & vec);
+  void addUniform(int flags, const std::string & name);
+  void setUniformMat4(int flag, const std::string & name, SceGxmContext *, const glm::mat4 & mat);
+  void setUniformMat3(int flag, const std::string & name, SceGxmContext *, const glm::mat3 & mat);
+  void setUniformVec4(int flag, const std::string & name, SceGxmContext *, const glm::vec4 & vec);
+  void setUniformVec3(int flag, const std::string & name, SceGxmContext *, const glm::vec3 & vec);
   void release(SceGxmShaderPatcher * shaderPatcher);
   void bind(SceGxmContext *context)
   {
@@ -45,5 +49,6 @@ private:
   SceGxmVertexAttribute		_vertexAttribute[3];
   SceGxmVertexStream		_vertexStream[1];
 
-  std::map<std::string, const SceGxmProgramParameter*> _uniforms;
+  std::map<std::string, const SceGxmProgramParameter*> _vUniforms;
+  std::map<std::string, const SceGxmProgramParameter*> _fUniforms;
 };

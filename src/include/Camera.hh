@@ -13,6 +13,10 @@ public:
   void update(const SceCtrlData & pad);
   glm::mat4 getViewMatrix() const;
   glm::mat4 getProjectionMatrix() const;
+  const glm::vec3 getPosition() const
+  {
+    return _cameraPos;
+  }
   
 private:
   glm::vec3	_cameraPos   = glm::vec3(0.0f, 0.0f,  5.0f);

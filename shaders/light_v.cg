@@ -1,0 +1,23 @@
+struct VertexOut
+{
+  float4 outPosition : POSITION;
+  float3 vPosition : TEXCOORD0;
+  float3 vNormal: TEXCOORD1;
+  float2 vTexCoord: TEXCOORD2;
+};
+
+void main(
+       float3 aPosition,
+       float3 aNormal,
+       float2 aTexCoord,
+       uniform float4x4 wvp,
+       uniform float3x3 normalMatrix,
+       VertexOut out vOut
+       )
+{
+  //  VertexOut vOut;	
+  vOut.outPosition = mul(float4(aPosition, 1.f), wvp);
+  vOut.vPosition = aPosition;
+  vOut.vNormal = mul(normalMatrix, aNormal);
+  vOut.vTexCoord = aTexCoord;
+}

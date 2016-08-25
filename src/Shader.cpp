@@ -128,33 +128,96 @@ SceGxmFragmentProgram *Shader::getFragmentProgram() const
     return _fragmentProgram;
 }
 
-void Shader::addFragmentUniform(const std::string & name)
+void Shader::addUniform(int flags, const std::string & name)
 {
-  _uniforms[name] = sceGxmProgramFindParameterByName(_fragmentProgramGxp, name.c_str());
-  debugNetPrintf(INFO, (char*)"%s : %p\n", name.c_str(), _uniforms[name]);
+  if (flags & FRAGMENT)
+    {
+      _fUniforms[name] = sceGxmProgramFindParameterByName(_fragmentProgramGxp, name.c_str());
+      debugNetPrintf(INFO, (char*)"%s : %p\n", name.c_str(), _fUniforms[name]);
+    }
+  if (flags & VERTEX)
+    {
+      _vUniforms[name] = sceGxmProgramFindParameterByName(_vertexProgramGxp, name.c_str());
+      debugNetPrintf(INFO, (char*)"%s : %p\n", name.c_str(), _vUniforms[name]);
+    }
 }
 
-void Shader::addVertexUniform(const std::string & name)
+void Shader::setUniformMat3(int flag,
+			    const std::string &name,
+			    SceGxmContext *context,
+			    const glm::mat3 &mat)
 {
-  _uniforms[name] = sceGxmProgramFindParameterByName(_vertexProgramGxp, name.c_str());
-  debugNetPrintf(INFO, (char*)"%s : %p\n", name.c_str(), _uniforms[name]);
+  if (flag & FRAGMENT)
+    {
+      void *buff;
+      sceGxmReserveFragmentDefaultUniformBuffer(context, &buff);
+      sceGxmSetUniformDataF(buff, _fUniforms[name], 0, 9, glm::value_ptr(mat));
+    }
+  if (flag & VERTEX)
+    {
+      void *buff;
+      sceGxmReserveVertexDefaultUniformBuffer(context, &buff);
+      sceGxmSetUniformDataF(buff, _vUniforms[name], 0, 9, glm::value_ptr(mat));
+    }
 }
 
-void Shader::setUniformMatrix(const std::string & name,
+void Shader::setUniformMat4(int flag,
+			    const std::string & name,
 			      SceGxmContext *context,
 			      const glm::mat4 & mat)
 {
-  void *buff;
-  sceGxmReserveVertexDefaultUniformBuffer(context, &buff);
-  sceGxmSetUniformDataF(buff, _uniforms[name], 0, 16,glm::value_ptr(mat));
+  if (flag & FRAGMENT)
+    {
+      void *buff;
+      sceGxmReserveFragmentDefaultUniformBuffer(context, &buff);
+      sceGxmSetUniformDataF(buff, _fUniforms[name], 0, 16,glm::value_ptr(mat));
+    }
+  if (flag & VERTEX)
+    {
+      void *buff;
+      sceGxmReserveVertexDefaultUniformBuffer(context, &buff);
+      sceGxmSetUniformDataF(buff, _vUniforms[name], 0, 16,glm::value_ptr(mat));
+    }
 }
 
-void Shader::setUniformVec4(const std::string & name, SceGxmContext *context, const glm::vec4 & vec)
+void Shader::setUniformVec4(int flag,
+			    const std::string & name,
+			    SceGxmContext *context,
+			    const glm::vec4 & vec)
 {
-  void *buff;
-  sceGxmReserveVertexDefaultUniformBuffer(context, &buff);
-  sceGxmSetUniformDataF(buff, _uniforms[name], 0, 4,glm::value_ptr(vec));
+  if (flag & FRAGMENT)
+    {
+      void *buff;
+      sceGxmReserveVertexDefaultUniformBuffer(context, &buff);
+      sceGxmSetUniformDataF(buff, _fUniforms[name], 0, 4,glm::value_ptr(vec));
+    }
+  if (flag & VERTEX)
+    {
+      void *buff;
+      sceGxmReserveVertexDefaultUniformBuffer(context, &buff);
+      sceGxmSetUniformDataF(buff, _vUniforms[name], 0, 4,glm::value_ptr(vec));
+    }
 }
+
+void Shader::setUniformVec3(int flag,
+			    const std::string & name,
+			    SceGxmContext *context,
+			    const glm::vec3 & vec)
+{
+  if (flag & FRAGMENT)
+    {
+      void *buff;
+      sceGxmReserveVertexDefaultUniformBuffer(context, &buff);
+      sceGxmSetUniformDataF(buff, _fUniforms[name], 0, 3, glm::value_ptr(vec));
+    }
+  if (flag & VERTEX)
+    {
+      void *buff;
+      sceGxmReserveVertexDefaultUniformBuffer(context, &buff);
+      sceGxmSetUniformDataF(buff, _vUniforms[name], 0, 3, glm::value_ptr(vec));
+    }
+}
+
 
 void Shader::release(SceGxmShaderPatcher *shaderPatcher)
 {
