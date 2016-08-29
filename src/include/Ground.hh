@@ -2,26 +2,21 @@
 
 #include <btBulletDynamicsCommon.h>
 #include <BulletDynamics/Vehicle/btRaycastVehicle.h>
-#include <psp2/types.h>
-#include <psp2/ctrl.h>
-#include "Mesh.hh"
-#include "Shader.hh"
+#include <stdlib.h>
 #include "Camera.hh"
 #include "AssetsManager.hh"
-#include "ObjLoader.hh"
-#include "PhysicSystem.hh"
-#include <stdlib.h>
+#include "MeshCollider.hh"
+#include "GameObject.hh"
 
-class Ground
+ class Ground : public GameObject
 {
 public:
-  bool init(ObjLoader & loader, AssetsManager & manager, PhysicSystem & physicSystem);
-  void update(float elapsedTime, SceCtrlData & pad);
-  void draw(Shader & shader, Camera & camera, SceGxmContext *context, AssetsManager & manager);
-  void release(PhysicSystem & system);
+  virtual bool init(AssetsManager & manager) override;
+  virtual void update(float elapsed, SceCtrlData & pad) override;
+  virtual void draw(Camera & camera, SceGxmContext *context, AssetsManager & manager) override;
+  virtual void release() override;
+  MeshCollider & getCollider();
   
 private:
-  std::vector<Mesh>				_mesh;
-  btVector3*					_vertices;
-  btTriangleIndexVertexArray*			_indexVertexArrays;
+  MeshCollider		_collider;
 };

@@ -5,9 +5,11 @@
 
 struct Material
 {
-  glm::vec4	ambiant;
-  glm::vec4	diffuse;
-  glm::vec4	specular;
-  float		specularComponent;
+  std::string	name;  
+  glm::vec3	ambiant;
+  glm::vec3	diffuse;
+  glm::vec3	specular;
+  float		shininess;
   std::string	map_diffuse;
+  float		specularComponent;
 };

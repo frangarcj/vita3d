@@ -14,39 +14,76 @@ Scene::~Scene()
 
 }
 
-bool	Scene::init()
+bool Scene::loadRessources()
 {
-  ObjLoader loader;
-  
-  if (!_clearer.initialize(_context.gxmContext(), _factory.shaderPatcher()))
-    return false;
-  
-  if (!_factory.loadShader(_lightShader,
+  Shader lightShader;
+  _manager.addShader("light", lightShader);
+
+  if (!_factory.loadShader(_manager.getShader("light"),
 			   "app0:res/Shaders/light_v.gxp",
 			   "app0:res/Shaders/light_f.gxp"))
     return false;
 
-  _physicSystem.init();
-  
-  _lightShader.addUniform(VERTEX, "wvp");
-  _lightShader.addUniform(VERTEX, "normalMatrix");
-  _lightShader.addUniform(FRAGMENT, "cameraPosition");
-  _lightShader.addUniform(FRAGMENT, "model");
+    _manager.getShader("light").addUniform(VERTEX, "wvp");
+  _manager.getShader("light").addUniform(VERTEX, "normalMatrix");
 
-  _ground.init(loader, _manager, _physicSystem);
-  _car.init(loader, _manager, _physicSystem);
+  if (!_manager.addMesh("app0:res/Mesh/Ground/ground.obj"))
+    return false;
+  if (!_manager.addMesh("app0:res/Mesh/car/chassis.obj"))
+    return false;
+  if (!_manager.addMesh("app0:res/Mesh/car/wheel.obj"))
+    return false;
+
+
+  Car* car = new Car;
+  car->getVehicle().init(_physicSystem);
+  car->init(_manager);
+
+
+  Ground *ground = new Ground;
+  ground->init(_manager);
+
+
+  btTransform tr;
+  tr.setIdentity();
+  tr.setOrigin(btVector3(0,0,0));
+  _physicSystem.addCollisionShape(ground->getCollider().getCollisionShape());
+  _physicSystem.localCreateRigidBody(0, tr, ground->getCollider().getCollisionShape());
+
+  Shader & s = _manager.getShader("light");
+
+
+    _gameObjects.push_back(car);
+    _gameObjects.push_back(ground);
+
+  return true;
+}
+
+bool	Scene::init()
+{
+  ObjLoader loader;
+
+  _physicSystem.init();
+
+  if (!loadRessources())
+    return false;
+
+  if (!_clearer.initialize(_context.gxmContext(), _factory.shaderPatcher()))
+    return false;
+
+
   _camera.setup();
-  
+
   return true;
 }
 
 void	Scene::update(SceCtrlData & pad, float totalT, float elapsed)
 {
   _camera.update(pad);
+  _physicSystem.update(elapsed);
 
-  _physicSystem.update(elapsed);  
-  _car.update(elapsed, pad);  
-
+  for (auto& e : _gameObjects)
+    e->update(elapsed, pad);
 }
 
 void	Scene::clearScreen()
@@ -55,19 +92,14 @@ void	Scene::clearScreen()
 }
 
 void	Scene::draw()
-{  
+{
   clearScreen();
-
-
-  _ground.draw(_lightShader, _camera, _context.gxmContext(), _manager);
-  _car.draw(_lightShader, _camera, _context.gxmContext(), _manager);
+  for (auto& e : _gameObjects)
+    e->draw(_camera, _context.gxmContext(), _manager);
 }
 
 void	Scene::release()
 {
-  _car.release(_physicSystem);
-  _ground.release(_physicSystem);
   _factory.releaseShader(_lightShader);
   _clearer.release(_factory.shaderPatcher());
-  //  _physicSystem.release();
 }

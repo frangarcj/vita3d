@@ -27,7 +27,7 @@ bool		Texture::loadFromPng(const std::string &fileName)
 
   load(static_cast<void*>(&fd), pngReadFileFn);
   sceIoClose(fd);
-  
+
   return true;
 }
 
@@ -39,16 +39,16 @@ bool Texture::load(const void *pIo, png_rw_ptr readDataFn)
     {
       return false;
     }
-  
+
   png_infop info_ptr = png_create_info_struct(png_ptr);
   if (info_ptr == nullptr)
     {
       png_destroy_read_struct(&png_ptr, (png_infopp)0, (png_infopp)0);
       return false;
     }
-  
+
   png_bytep *row_ptrs = nullptr;
-  
+
   if (setjmp(png_jmpbuf(png_ptr)))
     {
       png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)0);
@@ -56,17 +56,17 @@ bool Texture::load(const void *pIo, png_rw_ptr readDataFn)
       free(row_ptrs);
     return false;
   }
-  
+
   png_set_read_fn(png_ptr, (png_voidp)pIo, pngReadFileFn);
   png_set_sig_bytes(png_ptr, PNG_SIGSIZE);
   png_read_info(png_ptr, info_ptr);
-  
+
   unsigned int width, height;
   int bit_depth, color_type;
-  
+
   png_get_IHDR(png_ptr, info_ptr, &width, &height, &bit_depth,
 	       &color_type, NULL, NULL, NULL);
-  
+
   if ((color_type == PNG_COLOR_TYPE_PALETTE && bit_depth <= 8)
       || (color_type == PNG_COLOR_TYPE_GRAY && bit_depth < 8)
       || png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS)
@@ -90,7 +90,7 @@ bool Texture::load(const void *pIo, png_rw_ptr readDataFn)
       png_set_palette_to_rgb(png_ptr);
       png_set_filler(png_ptr, 0xFF, PNG_FILLER_AFTER);
     }
-  
+
   if (color_type == PNG_COLOR_TYPE_GRAY && bit_depth < 8)
     png_set_expand_gray_1_2_4_to_8(png_ptr);
 
@@ -118,12 +118,12 @@ bool Texture::load(const void *pIo, png_rw_ptr readDataFn)
       return false;
     }
 
-  void *texture_data = sceGxmTextureGetData(&_gxmTex);
+  char *texture_data = (char*)sceGxmTextureGetData(&_gxmTex);
   unsigned int stride = getStride();
 
   int i;
   for (i = 0; i < height; i++) {
-    row_ptrs[i] = (png_bytep)(texture_data + i*stride);
+    row_ptrs[i] = (png_bytep)(texture_data + i * stride);
   }
 
   png_read_image(png_ptr, row_ptrs);
@@ -191,7 +191,7 @@ int Texture::formatToBytespp(SceGxmTextureFormat format)
 bool   Texture::createEmptyTexture(unsigned int w, unsigned int h)
 {
   SceGxmTextureFormat format = SCE_GXM_TEXTURE_FORMAT_A8B8G8R8;
-  
+
   if (w > GXM_TEX_MAX_SIZE || h > GXM_TEX_MAX_SIZE)
     return false;
 
@@ -221,32 +221,32 @@ bool   Texture::createEmptyTexture(unsigned int w, unsigned int h)
 			  w,
 			  h,
 			  0);
-  
+
   if ((format & 0x9f000000U) == SCE_GXM_TEXTURE_BASE_FORMAT_P8)
-    {      
+    {
       const int pal_size = 256 * sizeof(uint32_t);
-      
+
       void *texture_palette = gpu_alloc(
 					SCE_KERNEL_MEMBLOCK_TYPE_USER_CDRAM_RW,
 					pal_size,
 					SCE_GXM_PALETTE_ALIGNMENT,
 					SCE_GXM_MEMORY_ATTRIB_READ,
 					&_paletteUID);
-      
+
       if (!texture_palette)
       {
 	_paletteUID = 0;
 	return false;
       }
-    
-    memset(texture_palette, 0, pal_size);    
+
+    memset(texture_palette, 0, pal_size);
     sceGxmTextureSetPalette(&_gxmTex, texture_palette);
     }
   else
     {
       _paletteUID = 0;
     }
-  
+
   return true;
 }
 

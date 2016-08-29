@@ -13,7 +13,7 @@ CXXFLAGS += -std=c++11 -Isrc/include -Iinclude
 
 LIBS := -lvita2d -lSceKernel_stub -lSceDisplay_stub -lSceGxm_stub \
 	-lSceSysmodule_stub -lSceCtrl_stub -lScePgf_stub \
-	-lSceCommonDialog_stub -ldebugnet -lSceNet_stub -lSceNetCtl_stub -lSceHttp_stub -lfreetype -lpng -ljpeg -lz -lm -lc -L./libs -lbullet
+	-lSceCommonDialog_stub -lSceNet_stub -lSceNetCtl_stub -lSceHttp_stub -lfreetype -lpng -ljpeg -lz -lm -lc -L./libs -lbullet -ldebugnet
 
 SRC_C :=$(call rwildcard, src/, *.c)
 SRC_CPP :=$(call rwildcard, src/, *.cpp)
@@ -73,7 +73,7 @@ out/%.o : src/%.cpp | $(OBJ_DIRS)
 
 clean:
 	rm -rf $(PROJECT).velf $(PROJECT).elf $(PROJECT).vpk param.sfo eboot.bin $(OBJS)
-	rm -rr $(abspath $(OBJ_DIRS))
+	rm -rf $(abspath $(OBJ_DIRS))
 
 install:
 	curl -T Vita3d.vpk ftp://192.168.1.5:1337/ux0:/

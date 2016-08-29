@@ -15,13 +15,13 @@ public:
 				  const btTransform& startTransform,
 				    btCollisionShape* shape);
 
-  
+
 private:
-  btBroadphaseInterface*			_overlappingPairCache;
-  btCollisionDispatcher*			_dispatcher;
-  btConstraintSolver*				_constraintSolver;
-  btBroadphaseInterface*			_broadphase;
-  btDefaultCollisionConfiguration*		_collisionConfiguration;
+  btBroadphaseInterface*			     _overlappingPairCache;
+  btCollisionDispatcher*			     _dispatcher;
+  btConstraintSolver*				               _constraintSolver;
+  btBroadphaseInterface*			             _broadphase;
+  btDefaultCollisionConfiguration*        _collisionConfiguration;
   btSequentialImpulseConstraintSolver*		_solver;
   btDiscreteDynamicsWorld*			_dynamicsWorld;
   btAlignedObjectArray<btCollisionShape*>	_collisionShapes;

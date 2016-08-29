@@ -11,13 +11,13 @@ void main(
        float3 aNormal,
        float2 aTexCoord,
        uniform float4x4 wvp,
-       uniform float3x3 normalMatrix,
+       uniform float4x4 normalMatrix,
        VertexOut out vOut
        )
 {
   //  VertexOut vOut;	
   vOut.outPosition = mul(float4(aPosition, 1.f), wvp);
   vOut.vPosition = aPosition;
-  vOut.vNormal = mul(normalMatrix, aNormal);
+  vOut.vNormal = mul(normalMatrix, float4(aNormal, 0.f)).xyz;
   vOut.vTexCoord = aTexCoord;
 }

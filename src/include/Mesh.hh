@@ -5,10 +5,6 @@
 #include <psp2/gxm.h>
 #include <string>
 
-struct Material
-{
-  std::string mapDiff;
-};
 
 struct Vattrib
 {
@@ -38,10 +34,6 @@ public:
   const uint16_t		*getIndicesPointer() const;
   void				release();
   void				draw(SceGxmContext *context);
-  Material &		        getMaterial()
-  {
-    return _mat;
-  }
   
 private:
   std::vector<uint16_t>		_indices;
@@ -55,6 +47,4 @@ private:
   
   Vattrib*			_pVertices = nullptr;
   uint16_t*			_pIndices = nullptr;
-
-  Material			_mat;
 };

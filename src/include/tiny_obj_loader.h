@@ -990,7 +990,7 @@ void LoadMtl(std::map<std::string, int> *material_map,
     filepath = m_mtlDirectory + "/" + matId;
   }
 
-  
+
   SceUID fd = sceIoOpen(filepath.c_str(), SCE_O_RDONLY, 0777);
   if (fd < 0)
     {
@@ -1005,12 +1005,11 @@ void LoadMtl(std::map<std::string, int> *material_map,
     while (sceIoRead(fd, buff, 511) > 0)
     {
       sstr << buff;
-      debugNetPrintf(INFO, "%s", buff);
       memset(buff, 0, 512);
     }
   sceIoClose(fd);
   LoadMtl(matMap, materials, &sstr);
-  
+
   return true;
 }
 
@@ -1042,7 +1041,7 @@ bool LoadObj(attrib_t *attrib, std::vector<shape_t> *shapes,
       memset(buff, 0, 512);
     }
   sceIoClose(fd);
-  
+
   std::string basePath;
   if (mtl_basepath) {
     basePath = mtl_basepath;
@@ -1051,7 +1050,7 @@ bool LoadObj(attrib_t *attrib, std::vector<shape_t> *shapes,
   std::string parentDirectory(filename);
 
   parentDirectory = parentDirectory.substr(0, parentDirectory.find_last_of("/"));
-  
+
   MaterialFileReader matFileReader(parentDirectory, basePath);
 
   return LoadObj(attrib, shapes, materials, err, &sstr, &matFileReader,
