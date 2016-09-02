@@ -10,6 +10,7 @@ before_install:
   - ./bootstrap-vitasdk.sh
   - export VITASDK=/usr/local/vitasdk
   - export PATH=$VITASDK/bin:$PATH
+  - ./install-all.sh
   - cd ..
 
 script:
