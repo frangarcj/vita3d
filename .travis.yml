@@ -2,6 +2,7 @@ os:
   - linux
 
 install:
+  - sudo apt-get install qemu-arm
   - git clone https://github.com/vitadev/vdpm
   - cd vdpm
   - cp config.sample config
