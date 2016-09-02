@@ -2,7 +2,7 @@ os:
   - linux
 language: c
 
-install:
+before-install:
   - sudo apt-get install qemu-kvm qemu
   - git clone https://github.com/vitadev/vdpm
   - cd vdpm
@@ -10,7 +10,7 @@ install:
   - ./bootstrap-vitasdk.sh
   - export VITASDK=/usr/local/vitasdk
   - export PATH=$VITASDK/bin:$PATH
-  - ./install-all.sh
+  - cd ..
 
 script:
   - make
