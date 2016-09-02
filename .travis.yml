@@ -2,7 +2,7 @@ os:
   - linux
 language: c
 
-before-install:
+before_install:
   - sudo apt-get install qemu-kvm qemu
   - git clone https://github.com/vitadev/vdpm
   - cd vdpm
